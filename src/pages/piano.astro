@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Piano from '../features/piano';
+import ExternalMIDIManager from '../components/ExternalMIDIManager';
+import FloatingContainer from '@components/FloatingContainer.astro';
+---
+
+<Layout title='Piano - Tone Sandbox'>
+  <FloatingContainer position='top-right'>
+    <ExternalMIDIManager client:load />
+  </FloatingContainer>
+  <FloatingContainer position='bottom-right'>
+    <ExternalMIDIManager client:load />
+  </FloatingContainer>
+  <main class='flex flex-col items-center justify-center h-screen w-full'>
+    <Piano client:visible />
+  </main>
+</Layout>

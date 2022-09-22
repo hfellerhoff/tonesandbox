@@ -1,0 +1,33 @@
+{
+  "name": "@example/basics",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/preact": "^1.1.0",
+    "@astrojs/solid-js": "^1.1.0",
+    "@astrojs/tailwind": "^2.0.1",
+    "@nanostores/preact": "^0.3.0",
+    "@nanostores/solid": "^0.3.0",
+    "astro": "^1.2.8",
+    "astro-icon": "^0.7.3",
+    "clsx": "^1.2.1",
+    "nanostores": "^0.7.0",
+    "preact": "^10.6.5",
+    "solid-js": "^1.4.3",
+    "tailwindcss": "^3.0.24",
+    "theory.js": "^1.2.1",
+    "tone": "^14.7.77"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.20",
+    "@types/react-dom": "^18.0.6"
+  }
+}

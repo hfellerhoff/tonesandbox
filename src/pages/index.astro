@@ -1,0 +1,17 @@
+---
+import NavigationCard from '../components/NavigationCard.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title='Tone Sandbox'>
+  <main class='mt-16 p-4'>
+    <ul class='grid gap-4 grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]'>
+      <NavigationCard
+        title='Piano'
+        body='Plugin your MIDI-enabled keyboard and play some music!'
+        href='/piano'
+        icon='piano-keys'
+      />
+    </ul>
+  </main>
+</Layout>

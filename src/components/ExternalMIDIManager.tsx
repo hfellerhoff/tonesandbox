@@ -106,7 +106,9 @@ const ExternalMIDIManager = ({}: Props) => {
         // <Tooltip content='To connect to a MIDI controller, use Chrome, Opera, or Edge.'>
         //   MIDI Not Supported
         // </Tooltip>
-        <></>
+        <div>
+          <p>MIDI Not Supported</p>
+        </div>
       ) : (
         <></>
       )}

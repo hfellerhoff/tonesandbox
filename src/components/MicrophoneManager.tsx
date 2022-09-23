@@ -25,9 +25,8 @@ function MicrophoneManager({}: Props) {
       }
 
       const meter = new Tone.Meter();
-      const mono = new Tone.Mono();
 
-      microphone.connect(mono).connect(meter).toDestination();
+      //   microphone.connect(meter).toDestination();
 
       microphoneStore.set({
         status: 'connected',

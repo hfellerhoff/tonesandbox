@@ -477,7 +477,7 @@ function SequencerScreen() {
             {playbackLoop() ? "Stop" : "Start"}
           </Button>
           <Button onClick={() => setSelectedTiles(new Map())}>Clear</Button>
-          <Button onClick={copyStateUrl}>Copy Url</Button>
+          <Button onClick={copyStateUrl}>Copy URL</Button>
         </div>
       </div>
       <div class="flex flex-col gap-2 absolute bg-white py-2 px-4 rounded shadow top-4 right-4">

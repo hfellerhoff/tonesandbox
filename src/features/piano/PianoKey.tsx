@@ -1,8 +1,8 @@
-import { h, Fragment } from 'preact';
-import { Note } from 'theory.js';
-import type { PianoStyle } from '.';
-import { queueMidiMessage } from '../../shared/midiStore';
-import clsx from 'clsx';
+import { h, Fragment } from "preact";
+import { Note } from "theory.js";
+import type { PianoStyle } from ".";
+import { queueMidiMessage } from "../../shared/midiStore";
+import clsx from "clsx";
 
 interface Props {
   note: string;
@@ -15,19 +15,19 @@ interface Props {
 const PianoKey = ({ note, octave, style, activeNotes, isMouseDown }: Props) => {
   const name = note + octave;
 
-  const isAccidental = note.includes('#') || note.includes('b');
+  const isAccidental = note.includes("#") || note.includes("b");
 
   const width = isAccidental ? style.width / 2 : style.width;
   const height = isAccidental ? style.height / 1.5 : style.height;
 
   const offset = isAccidental
-    ? note === 'C#'
+    ? note === "C#"
       ? 1
-      : note === 'D#'
+      : note === "D#"
       ? 2
-      : note === 'F#'
+      : note === "F#"
       ? 4
-      : note === 'G#'
+      : note === "G#"
       ? 5
       : 6
     : 0;
@@ -45,11 +45,11 @@ const PianoKey = ({ note, octave, style, activeNotes, isMouseDown }: Props) => {
   return (
     <div
       className={clsx(
-        'w-3 h-40 rounded border-2 border-gray-100 flex items-end justify-center pb-4 transition-all',
+        "w-3 h-40 rounded border-2 border-gray-100 flex items-end justify-center pb-4 transition-all",
         {
-          'bg-white shadow text-gray-700': !isAccidental,
-          'bg-gray-900 text-transparent w-8 h-20 absolute': isAccidental,
-          'shadow-inner bg-indigo-400': isActive,
+          "bg-white shadow text-gray-700": !isAccidental,
+          "bg-gray-900 text-transparent w-8 h-20 absolute": isAccidental,
+          "shadow-inner bg-indigo-400": isActive,
         }
       )}
       style={{

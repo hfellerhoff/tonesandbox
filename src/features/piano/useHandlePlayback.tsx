@@ -1,22 +1,20 @@
-import { useCallback, useEffect, useState } from 'preact/hooks';
-import { Scale, Note } from 'theory.js';
-import * as Tone from 'tone';
-import {
-  initializeInstrumentStore,
-  instrumentStore,
-  selectedInstrumentStore,
-} from '../../shared/instrumentStore';
-import { useStore } from '@nanostores/preact';
+import { useCallback, useEffect, useState } from "preact/hooks";
+import { Scale, Note } from "theory.js";
+import * as Tone from "tone";
+
+import { useStore } from "@nanostores/preact";
 import {
   clearMidiMessage,
   MIDIMessage,
   midiMessagesStore,
-} from '../../shared/midiStore';
+} from "../../shared/midiStore";
+import { instrumentsAtom, selectedInstrumentAtom } from "@shared/instruments";
+import { setSelectedInstrument } from "@shared/instruments";
 
 const useHandlePlayback = () => {
   const $midiMessages = useStore(midiMessagesStore);
-  const $instruments = useStore(instrumentStore);
-  const $selectedInstrument = useStore(selectedInstrumentStore);
+  const $instruments = useStore(instrumentsAtom);
+  const $selectedInstrument = useStore(selectedInstrumentAtom);
   const [activeNotes, setActiveNotes] = useState<Record<string, boolean>>({});
   const [sustainedNotes, setSustainedNotes] = useState<Record<string, boolean>>(
     {}
@@ -25,14 +23,11 @@ const useHandlePlayback = () => {
 
   useEffect(() => {
     if ($instruments.length === 0) {
-      initializeInstrumentStore();
       return;
     }
 
-    const updatedSelectedInstrument = $instruments[0];
-    if (!$selectedInstrument && updatedSelectedInstrument) {
-      selectedInstrumentStore.set(updatedSelectedInstrument);
-      updatedSelectedInstrument.instrument.toDestination();
+    if (!$selectedInstrument) {
+      setSelectedInstrument("piano");
     }
   }, [$instruments, $selectedInstrument]);
 

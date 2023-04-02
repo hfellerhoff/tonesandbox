@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Sequencer from "../features/sequencer";
+---
+
+<Layout title="Sequencer - Tone Sandbox">
+  <main class="flex flex-col items-center justify-center h-screen w-full">
+    <Sequencer client:visible />
+  </main>
+</Layout>

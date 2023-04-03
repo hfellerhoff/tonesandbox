@@ -394,7 +394,7 @@ function SequencerScreen() {
           <button
             onClick={() => setMouseDownMode("single")}
             class={clsx(
-              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-gray-100 active:translate-y-0.5 active:shadow border-2 transition-colors",
+              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 transition-colors",
               {
                 "border-purple-600": mouseDownMode() === "single",
                 "border-transparent": mouseDownMode() !== "single",
@@ -406,7 +406,7 @@ function SequencerScreen() {
           <button
             onClick={() => setMouseDownMode("combined")}
             class={clsx(
-              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-gray-100 active:translate-y-0.5 active:shadow border-2 transition-colors",
+              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 transition-colors",
               {
                 "border-purple-600": mouseDownMode() === "combined",
                 "border-transparent": mouseDownMode() !== "combined",

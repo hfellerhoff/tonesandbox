@@ -9,7 +9,7 @@ import {
 import { isToneStartedStore } from "@shared/isToneStartedStore";
 import { For, createEffect } from "solid-js";
 
-export default function InstrumentManager() {
+export function InstrumentManagerContent() {
   const isToneStarted = useStore(isToneStartedStore);
   const instruments = useStore(instrumentsAtom);
   const selectedInstrumentSlug = useStore(selectedInstrumentSlugAtom);
@@ -22,7 +22,7 @@ export default function InstrumentManager() {
   };
 
   return (
-    <div class="absolute bg-white py-2 rounded shadow bottom-4 left-4 px-3">
+    <>
       <label class="block text-sm font-medium text-gray-500 px-1">
         Instrument
       </label>
@@ -57,6 +57,14 @@ export default function InstrumentManager() {
           setGain(parseFloat((event.target as HTMLInputElement).value));
         }}
       /> */}
+    </>
+  );
+}
+
+export default function FloatingInstrumentManager() {
+  return (
+    <div class="absolute bg-white py-2 rounded shadow bottom-4 left-4 px-3">
+      <InstrumentManagerContent />
     </div>
   );
 }

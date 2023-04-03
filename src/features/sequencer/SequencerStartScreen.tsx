@@ -17,11 +17,11 @@ import {
 } from "./state";
 import { decodeUrlToSequencerState } from "./urlUtils";
 import { setBpm } from "./playback";
+import type { ParentProps } from "solid-js";
+import ToneFeatureWrapper from "@components/ToneFeatureWrapper";
 
-export default function StartScreen() {
-  const onStart = async () => {
-    await Tone.start();
-
+export default function SequencerWrapper(props: ParentProps) {
+  const onStart = () => {
     const state = decodeUrlToSequencerState(window.location.href);
     if (state.bpm) setBpm(state.bpm);
     if (state.measures) setSequencerMeasures(state.measures);
@@ -37,17 +37,9 @@ export default function StartScreen() {
 
     setGain(0.8);
     setSelectedInstrument("soft-synth");
-    setToneIsReady();
   };
 
   return (
-    <div class="absolute inset-0 z-50 bg-gray-200 grid place-items-center">
-      <button
-        onClick={onStart}
-        class="p-8 shadow-lg rounded-full bg-gray-100 active:translate-y-0.5 active:shadow"
-      >
-        <FaSolidPlay size={24} />
-      </button>
-    </div>
+    <ToneFeatureWrapper onStart={onStart}>{props.children}</ToneFeatureWrapper>
   );
 }

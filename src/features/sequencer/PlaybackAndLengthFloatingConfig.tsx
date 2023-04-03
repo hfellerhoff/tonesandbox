@@ -12,7 +12,13 @@ import {
   setSequencerMeasures,
   setSequencerSubdivisions,
 } from "./state";
-import { refreshPlaybackLoop, bpm, setBpm } from "./playback";
+import {
+  refreshPlaybackLoop,
+  bpm,
+  setBpm,
+  setVelocity,
+  velocity,
+} from "./playback";
 
 type ConfigureNumberInputProps = {
   id: string;
@@ -93,6 +99,23 @@ export default function PlaybackAndLengthFloatingConfig() {
         setValue={setBpm}
         onSetValue={refreshPlaybackLoop}
       />
+      <div class="flex flex-row gap-2 items-center justify-between max-w-[12rem]">
+        <label class="text-gray-500 text-sm" for="velocity">
+          Velocity
+        </label>
+        <input
+          type="range"
+          id="velocity"
+          value={velocity()}
+          min={0}
+          max={1}
+          step={0.01}
+          onChange={(e) => {
+            setVelocity(parseFloat(e.target.value));
+            refreshPlaybackLoop();
+          }}
+        />
+      </div>
     </div>
   );
 }

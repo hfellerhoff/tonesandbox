@@ -1,13 +1,15 @@
+import * as Tone from "tone";
 import { selectedInstrumentAtom } from "@shared/instruments";
 import { createSignal } from "solid-js";
 import {
-  SelectedTileMap,
   TileState,
+  selectedTiles,
   sequencerBeats,
   sequencerMeasures,
   sequencerSubdivisions,
 } from "./state";
-import { selectedTiles } from "./state";
+
+export const [velocity, setVelocity] = createSignal(0.5);
 
 export const [bpm, setBpm] = createSignal(120);
 export const [playbackLoop, setPlaybackLoop] = createSignal<number>(0);
@@ -50,6 +52,10 @@ export const isLocationAfter = (
 export const stopPlaybackLoop = () => {
   clearInterval(playbackLoop());
   setPlaybackLoop(0);
+  const instrument = selectedInstrumentAtom.get()?.instrument;
+  if (instrument) {
+    instrument.releaseAll();
+  }
 };
 
 export const incrementPlaybackLocation = ([
@@ -177,10 +183,12 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
   const noteLengthSeconds = 60 / sequencerSubdivisions() / bpm();
   instrument.triggerAttackRelease(
     currentSelectedSingleNotes,
-    noteLengthSeconds
+    noteLengthSeconds,
+    Tone.now(),
+    velocity()
   );
 
-  instrument.triggerAttack(newlySelectedCombinedNotes);
+  instrument.triggerAttack(newlySelectedCombinedNotes, Tone.now(), velocity());
 };
 
 export const createPlaybackLoop = () => {
@@ -209,11 +217,6 @@ export const onTogglePlayback = () => {
   if (playbackLoop()) {
     stopPlaybackLoop();
     setLocationToStopped();
-
-    const instrument = selectedInstrumentAtom.get()?.instrument;
-    if (instrument) {
-      instrument.releaseAll();
-    }
 
     return;
   }

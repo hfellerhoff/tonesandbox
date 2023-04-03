@@ -1,10 +1,10 @@
 import InstrumentManager from "@components/InstrumentManager";
 import { useStore } from "@nanostores/solid";
-import { isToneStartedStore } from "@shared/isToneStartedStore";
+import copyToClipboard from "@shared/utils/copyToClipboard";
 import clsx from "clsx";
 import { BiRegularDotsHorizontal } from "solid-icons/bi";
 import { OcHorizontalrule3 } from "solid-icons/oc";
-import { For, Show, createEffect, createMemo, createSignal } from "solid-js";
+import { For, createMemo, createSignal } from "solid-js";
 import Button from "./Button";
 import PlaybackAndLengthFloatingConfig from "./PlaybackAndLengthFloatingConfig";
 import ScaleSelection, {
@@ -13,9 +13,9 @@ import ScaleSelection, {
   scaleAtom,
   showNonDiatonicNotesAtom,
 } from "./ScaleSelection";
+import SequencerWrapper from "./SequencerStartScreen";
 import type { SequencerNote } from "./SequencerTile";
 import SequencerTile from "./SequencerTile";
-import StartScreen from "./StartScreen";
 import {
   PlaybackLocation,
   decrementPlaybackLocation,
@@ -39,7 +39,6 @@ import {
   type TileKey,
 } from "./state";
 import { encodeSequencerToUrl } from "./urlUtils";
-import copyToClipboard from "@shared/utils/copyToClipboard";
 
 // Single note
 export const [mouseInteractionIntent, setMouseInteractionIntent] = createSignal<
@@ -447,13 +446,9 @@ function SequencerScreen() {
 }
 
 export default function Sequencer() {
-  const isToneReady = useStore(isToneStartedStore);
-
   return (
-    <div>
-      <Show when={isToneReady()} fallback={<StartScreen />}>
-        <SequencerScreen />
-      </Show>
-    </div>
+    <SequencerWrapper>
+      <SequencerScreen />
+    </SequencerWrapper>
   );
 }

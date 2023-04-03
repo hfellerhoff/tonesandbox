@@ -1,43 +1,49 @@
+import {
+  rootNoteAtom,
+  scaleAtom,
+  showNonDiatonicNotesAtom,
+} from "./ScaleSelection";
+import { bpm } from "./playback";
+import {
+  sequencerMeasures,
+  selectedTiles,
+  sequencerBeats,
+  sequencerSubdivisions,
+  octaves,
+  baseOctave,
+  TileState,
+} from "./state";
+
 type TileKey = `${string}-${number}-${number}-${number}`;
 
-type SequencerState = {
-  tiles: Map<TileKey, boolean>;
-  measures: number;
-  beats: number;
-  subdivisions: number;
-  bpm: number;
-  octaves: number;
-  baseOctave: number;
-  rootNote: string;
-  scale: number[];
-  showNonDiatonicNotes: boolean;
-};
-export function encodeSequencerToUrl(sequencerState: SequencerState) {
-  const {
-    tiles,
-    measures,
-    beats,
-    subdivisions,
-    bpm,
-    octaves,
-    baseOctave,
-    rootNote,
-    scale,
-    showNonDiatonicNotes,
-  } = sequencerState;
+const SEPARATOR = ":";
 
-  const selectedTiles = Array.from(tiles.entries())
-    .filter(([, value]) => value)
-    .map(([key]) => key);
+export function encodeSequencerToUrl() {
+  const tiles = selectedTiles();
+  const measures = sequencerMeasures();
+  const beats = sequencerBeats();
+  const subdivisions = sequencerSubdivisions();
+  const bpmValue = bpm();
+  const octavesValue = octaves();
+  const baseOctaveValue = baseOctave();
+  const rootNote = rootNoteAtom.get();
+  const scale = scaleAtom.get();
+  const showNonDiatonicNotes = showNonDiatonicNotesAtom.get();
+
+  const selectedTileArray = Array.from(tiles.entries())
+    .filter(([, value]) => value !== TileState.None)
+    .map(([key, value]) => `${key}${SEPARATOR}${value}`);
+
+  console.log(selectedTileArray);
 
   const params = new URLSearchParams({
-    t: btoa(JSON.stringify(selectedTiles)),
+    t: btoa(JSON.stringify(selectedTileArray)),
     m: measures.toString(),
     b: beats.toString(),
     s: subdivisions.toString(),
-    bpm: bpm.toString(),
-    o: octaves.toString(),
-    bo: baseOctave.toString(),
+    bpm: bpmValue.toString(),
+    o: octavesValue.toString(),
+    bo: baseOctaveValue.toString(),
     rn: rootNote,
     sc: btoa(JSON.stringify(scale)),
     sndn: showNonDiatonicNotes ? "1" : "0",
@@ -51,11 +57,17 @@ export function decodeUrlToSequencerState(urlString: string) {
   const params = url.searchParams;
 
   const t = params.get("t");
-  const tileArray = t ? (JSON.parse(atob(t)) as TileKey[]) : undefined;
-  const tiles = tileArray?.reduce((acc, tile) => {
-    acc.set(tile, true);
+  const tileArray = t
+    ? ((JSON.parse(atob(t)) as string[]).map((entry) => {
+        const [key, stateString] = entry.split(SEPARATOR);
+        const stateValue: TileState = parseInt(stateString || "1");
+        return [key, stateValue];
+      }) as [TileKey, TileState][])
+    : undefined;
+  const tiles = tileArray?.reduce((acc, [key, state]) => {
+    acc.set(key, state);
     return acc;
-  }, new Map<TileKey, boolean>());
+  }, new Map<TileKey, TileState>());
 
   const m = params.get("m");
   const measures = m ? parseInt(m) : undefined;
@@ -84,7 +96,7 @@ export function decodeUrlToSequencerState(urlString: string) {
   const sndn = params.get("sndn");
   const showNonDiatonicNotes = sndn ? sndn === "1" : undefined;
 
-  const sequencerState: Partial<SequencerState> = {
+  const sequencerState = {
     tiles,
     measures,
     beats,

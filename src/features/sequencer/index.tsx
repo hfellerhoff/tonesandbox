@@ -1,303 +1,69 @@
 import InstrumentManager from "@components/InstrumentManager";
 import { useStore } from "@nanostores/solid";
-import {
-  selectedInstrumentAtom,
-  setGain,
-  setSelectedInstrument,
-} from "@shared/instruments";
-import { isToneStartedStore, setToneIsReady } from "@shared/isToneStartedStore";
-import copyToClipboard from "@shared/utils/copyToClipboard";
-import { FaSolidPlay } from "solid-icons/fa";
+import { isToneStartedStore } from "@shared/isToneStartedStore";
 import clsx from "clsx";
-import {
-  Accessor,
-  For,
-  Setter,
-  Show,
-  createMemo,
-  createSignal,
-} from "solid-js";
-import * as Tone from "tone";
+import { BiRegularDotsHorizontal } from "solid-icons/bi";
+import { OcHorizontalrule3 } from "solid-icons/oc";
+import { For, Show, createEffect, createMemo, createSignal } from "solid-js";
 import Button from "./Button";
-import Input from "./Input";
+import PlaybackAndLengthFloatingConfig from "./PlaybackAndLengthFloatingConfig";
 import ScaleSelection, {
   ALL_NOTES,
   rootNoteAtom,
   scaleAtom,
   showNonDiatonicNotesAtom,
 } from "./ScaleSelection";
-import { decodeUrlToSequencerState, encodeSequencerToUrl } from "./urlUtils";
+import type { SequencerNote } from "./SequencerTile";
+import SequencerTile from "./SequencerTile";
+import StartScreen from "./StartScreen";
+import {
+  PlaybackLocation,
+  decrementPlaybackLocation,
+  incrementPlaybackLocation,
+  isLocationBefore,
+  onTogglePlayback,
+  playbackLocation,
+  playbackLoop,
+} from "./playback";
+import {
+  TileState,
+  baseOctave,
+  isMouseDown,
+  octaves,
+  selectedTiles,
+  sequencerBeats,
+  sequencerMeasures,
+  sequencerSubdivisions,
+  setIsMouseDown,
+  setSelectedTiles,
+  type TileKey,
+} from "./state";
+import { encodeSequencerToUrl } from "./urlUtils";
+import copyToClipboard from "@shared/utils/copyToClipboard";
 
-const [sequencerMeasures, setSequencerMeasures] = createSignal(1);
-const [sequencerBeats, setSequencerBeats] = createSignal(4);
-const [sequencerSubdivisions, setSequencerSubdivisions] = createSignal(4);
-
-const [bpm, setBpm] = createSignal(120);
-const [playbackLoop, setPlaybackLoop] = createSignal<number>(0);
-
-type PlaybackLocation = [number, number, number];
-const [playbackLocation, setPlaybackLocation] = createSignal<PlaybackLocation>([
-  -1, -1, -1,
-]);
-
-const [octaves, setOctaves] = createSignal(2);
-const [baseOctave, setBaseOctave] = createSignal(4);
-
-type SequencerNote = {
-  note: string;
-  label: string;
-  isDiatonic: boolean;
-  isRootNote: boolean;
-};
-
-const [isMouseDown, setIsMouseDown] = createSignal(false);
-const [mouseInteractionIntent, setMouseInteractionIntent] = createSignal<
+// Single note
+export const [mouseInteractionIntent, setMouseInteractionIntent] = createSignal<
   "select" | "deselect"
 >("select");
 
-type TileKey = `${string}-${number}-${number}-${number}`;
-const [selectedTiles, setSelectedTiles] = createSignal(
-  new Map<TileKey, boolean>(),
-  { equals: false }
-);
-
-function StartScreen() {
-  const onStart = async () => {
-    await Tone.start();
-
-    const state = decodeUrlToSequencerState(window.location.href);
-    if (state.bpm) setBpm(state.bpm);
-    if (state.measures) setSequencerMeasures(state.measures);
-    if (state.beats) setSequencerBeats(state.beats);
-    if (state.subdivisions) setSequencerSubdivisions(state.subdivisions);
-    if (state.octaves) setOctaves(state.octaves);
-    if (state.baseOctave) setBaseOctave(state.baseOctave);
-    if (state.rootNote) rootNoteAtom.set(state.rootNote);
-    if (state.scale) scaleAtom.set(state.scale);
-    if (state.showNonDiatonicNotes)
-      showNonDiatonicNotesAtom.set(state.showNonDiatonicNotes);
-    if (state.tiles) setSelectedTiles(state.tiles);
-
-    setGain(0.8);
-    setSelectedInstrument("soft-synth");
-    setToneIsReady();
-  };
-
-  return (
-    <div class="absolute inset-0 z-50 bg-gray-200 grid place-items-center">
-      <button
-        onClick={onStart}
-        class="p-8 shadow-lg rounded-full bg-gray-100 active:translate-y-0.5 active:shadow"
-      >
-        <FaSolidPlay size={24} />
-      </button>
-    </div>
-  );
-}
-
-type SequencerTileProps = {
-  note: SequencerNote;
-  measure: number;
-  beat: number;
-  subdivision: number;
-  handleOnMouseOverTile: (
-    note: string,
-    measure: number,
-    beat: number,
-    subdivision: number
-  ) => () => void;
-  handleOnMouseDownTile: (
-    note: string,
-    measure: number,
-    beat: number,
-    subdivision: number
-  ) => () => void;
-  handleOnClickTile: (
-    note: string,
-    measure: number,
-    beat: number,
-    subdivision: number
-  ) => () => void;
+// Extended connected note
+type TentativeCombinedNote = {
+  location: PlaybackLocation;
+  note: string;
 };
-
-function SequencerTile(props: SequencerTileProps) {
-  const tileKey: TileKey = `${props.note.note}-${props.measure}-${props.beat}-${props.subdivision}`;
-
-  const isSelected = createMemo(() => !!selectedTiles().get(tileKey));
-
-  const isCurrentLocation = createMemo(() => {
-    const [measure, beat, subdivision] = playbackLocation();
-    const isCurrentLocation =
-      measure === props.measure &&
-      beat === props.beat &&
-      subdivision === props.subdivision;
-
-    return isCurrentLocation;
-  });
-
-  const onMouseOverTile = props.handleOnMouseOverTile(
-    props.note.note,
-    props.measure,
-    props.beat,
-    props.subdivision
-  );
-
-  return (
-    <input
-      type="checkbox"
-      class={clsx("w-8 h-8 rounded-sm appearance-none", {
-        "bg-white": props.note.isDiatonic && !isSelected(),
-        "bg-gray-100": !props.note.isDiatonic && !isSelected(),
-
-        "bg-gray-400": isSelected(),
-
-        "bg-opacity-75": !isCurrentLocation(),
-        "bg-opacity-100": isCurrentLocation(),
-      })}
-      checked={isSelected()}
-      onMouseEnter={onMouseOverTile}
-      onMouseLeave={onMouseOverTile}
-      onMouseDown={() => {
-        if (isSelected()) {
-          setMouseInteractionIntent("deselect");
-        } else {
-          setMouseInteractionIntent("select");
-        }
-      }}
-      onClick={props.handleOnClickTile(
-        props.note.note,
-        props.measure,
-        props.beat,
-        props.subdivision
-      )}
-    />
-  );
-}
-
-const setLocationToStopped = () => setPlaybackLocation([-1, -1, -1]);
-const setLocationToBeginning = () => setPlaybackLocation([0, 0, 0]);
-
-const stopPlaybackLoop = () => {
-  clearInterval(playbackLoop());
-  setPlaybackLoop(0);
-};
-
-const playSelectedNotes = (
-  currentMeasure: number,
-  currentBeat: number,
-  currentSubdivision: number
-) => {
-  const instrument = selectedInstrumentAtom.get()?.instrument;
-  if (!instrument) return;
-
-  const selectedNotes = Array.from(selectedTiles().entries())
-    .filter(([_, isSelected]) => isSelected)
-    .map(([key]) => {
-      const [note, measure, beat, subdivision] = key.split("-");
-      return {
-        note,
-        measure: parseInt(measure),
-        beat: parseInt(beat),
-        subdivision: parseInt(subdivision),
-      };
-    })
-    .filter(
-      ({ measure, beat, subdivision }) =>
-        measure === currentMeasure &&
-        beat === currentBeat &&
-        subdivision === currentSubdivision
-    )
-    .map(({ note }) => note);
-
-  const noteLengthSeconds = 60 / sequencerSubdivisions() / bpm();
-  instrument.triggerAttackRelease(selectedNotes, noteLengthSeconds);
-};
-
-const createPlaybackLoop = () => {
-  playSelectedNotes(...playbackLocation());
-
-  const intervalFrequency =
-    (60 / sequencerSubdivisions() / bpm()) * (4 / sequencerBeats()) * 1000;
-
-  setPlaybackLoop(
-    setInterval(() => {
-      const [measure, beat, subdivision] = playbackLocation();
-      let nextSubdivision = subdivision + 1;
-      let nextBeat = beat;
-      let nextMeasure = measure;
-
-      if (nextSubdivision >= sequencerSubdivisions()) {
-        nextSubdivision = 0;
-        nextBeat = beat + 1;
-      }
-      if (nextBeat >= sequencerBeats()) {
-        nextBeat = 0;
-        nextMeasure = measure + 1;
-      }
-      if (nextMeasure >= sequencerMeasures()) {
-        nextMeasure = 0;
-      }
-      setPlaybackLocation([nextMeasure, nextBeat, nextSubdivision]);
-      playSelectedNotes(nextMeasure, nextBeat, nextSubdivision);
-    }, intervalFrequency)
-  );
-};
-
-const refreshPlaybackLoop = () => {
-  if (playbackLoop()) {
-    stopPlaybackLoop();
-    createPlaybackLoop();
-  }
-};
-
-const onTogglePlayback = () => {
-  if (playbackLoop()) {
-    stopPlaybackLoop();
-    setLocationToStopped();
-    return;
-  }
-  setLocationToBeginning();
-  createPlaybackLoop();
-};
-
-type ConfigOptionNumberProps = {
-  id: string;
-  label: string;
-  value: Accessor<number>;
-  setValue: Setter<number>;
-  onSetValue: () => void;
-};
-
-function ConfigOptionNumber(props: ConfigOptionNumberProps) {
-  const onChange = (e: any) => {
-    const newValue = parseInt(e.target.value);
-    if (Number.isSafeInteger(newValue)) {
-      props.setValue(newValue);
-      props.onSetValue();
-    }
-  };
-
-  return (
-    <div class="flex flex-row gap-2 items-center justify-between max-w-[12rem]">
-      <label class="text-gray-500 text-sm" for={props.id}>
-        {props.label}
-      </label>
-      <Input
-        type="number"
-        id={props.id}
-        value={props.value()}
-        onBlur={onChange}
-        onSubmit={onChange}
-        class="text-sm max-w-[6rem] text-right"
-      />
-    </div>
-  );
-}
+export const [tentativeCombinedStartNote, setTentativeCombinedStartNote] =
+  createSignal<TentativeCombinedNote | null>(null);
+export const [tentativeCombinedEndNote, setTentativeCombinedEndNote] =
+  createSignal<TentativeCombinedNote | null>(null);
 
 function SequencerScreen() {
   const scale = useStore(scaleAtom);
   const rootNote = useStore(rootNoteAtom);
   const showNonDiatonicNotes = useStore(showNonDiatonicNotesAtom);
+
+  const [mouseDownMode, setMouseDownMode] = createSignal<"single" | "combined">(
+    "single"
+  );
 
   const measuresArray = createMemo(() =>
     Array.from({ length: sequencerMeasures() })
@@ -362,25 +128,92 @@ function SequencerScreen() {
     return notes.reverse();
   });
 
+  const tentativeCombinedNotes = createMemo(() => {
+    const tentativeTileKeys: TileKey[] = [];
+
+    const tentativeStartLocation = tentativeCombinedStartNote();
+    const tentativeEndLocation = tentativeCombinedEndNote();
+
+    if (!tentativeStartLocation || !tentativeEndLocation)
+      return tentativeTileKeys;
+
+    const { note: startNote, location: startLocation } = tentativeStartLocation;
+    const { note: endNote, location: endLocation } = tentativeEndLocation;
+
+    let localStartLocation: PlaybackLocation = [...startLocation];
+
+    while (
+      localStartLocation[0] !== endLocation[0] ||
+      localStartLocation[1] !== endLocation[1] ||
+      localStartLocation[2] !== endLocation[2]
+    ) {
+      const tileKey: TileKey = `${startNote}-${localStartLocation[0]}-${localStartLocation[1]}-${localStartLocation[2]}`;
+      tentativeTileKeys.push(tileKey);
+
+      const nextLocation = incrementPlaybackLocation(localStartLocation);
+      localStartLocation[0] = nextLocation[0];
+      localStartLocation[1] = nextLocation[1];
+      localStartLocation[2] = nextLocation[2];
+    }
+
+    return tentativeTileKeys;
+  });
+
   addEventListener("mousedown", () => setIsMouseDown(true));
   addEventListener("mouseup", () => {
     setIsMouseDown(false);
+
+    if (mouseDownMode() === "combined") {
+      tentativeCombinedNotes().forEach((tileKey) => {
+        selectedTiles().set(tileKey, TileState.Combined);
+      });
+
+      setSelectedTiles(new Map(selectedTiles()));
+    }
+
+    setTentativeCombinedStartNote(null);
+    setTentativeCombinedEndNote(null);
   });
 
-  const handleOnMouseOverTile =
+  const handleOnMouseEnterOrLeaveTile =
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {
       if (isMouseDown()) {
         const tileKey: TileKey = `${note}-${measure}-${beat}-${subdivision}`;
-
         const isSelected = !!selectedTiles().get(tileKey);
         const canChange =
           (mouseInteractionIntent() === "select" && !isSelected) ||
           (mouseInteractionIntent() === "deselect" && isSelected);
 
-        if (canChange) {
-          selectedTiles().set(tileKey, !isSelected);
+        if (!canChange) return;
+
+        if (mouseDownMode() === "single") {
+          const targetState = isSelected ? TileState.None : TileState.Single;
+          selectedTiles().set(tileKey, targetState);
           setSelectedTiles(new Map(selectedTiles()));
+        }
+
+        if (mouseDownMode() === "combined") {
+          const startNote = tentativeCombinedStartNote();
+
+          if (mouseInteractionIntent() === "select") {
+            if (!startNote || note !== startNote.note) return;
+
+            if (
+              !isLocationBefore(
+                [measure, beat, subdivision],
+                startNote.location
+              )
+            ) {
+              setTentativeCombinedEndNote({
+                location: [measure, beat, subdivision],
+                note: note,
+              });
+            }
+          } else {
+            selectedTiles().set(tileKey, TileState.None);
+            setSelectedTiles(new Map(selectedTiles()));
+          }
         }
       }
     };
@@ -389,48 +222,84 @@ function SequencerScreen() {
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {
       const tileKey: TileKey = `${note}-${measure}-${beat}-${subdivision}`;
-      if (!!selectedTiles().get(tileKey)) {
+      const isSelected = !!selectedTiles().get(tileKey);
+      if (isSelected) {
         setMouseInteractionIntent("deselect");
       } else {
         setMouseInteractionIntent("select");
       }
+
+      if (mouseDownMode() === "combined") {
+        if (mouseInteractionIntent() === "select") {
+          setTentativeCombinedStartNote({
+            location: [measure, beat, subdivision],
+            note: note,
+          });
+          setTentativeCombinedEndNote({
+            location: [measure, beat, subdivision],
+            note: note,
+          });
+        }
+      }
     };
+
+  createEffect(() => console.log(mouseInteractionIntent()));
+
+  const handleOnMouseUpTile = (
+    endNote: string,
+    endMeasure: number,
+    endBeat: number,
+    endSubdivision: number
+  ) => {
+    const mouseStartNote = tentativeCombinedStartNote();
+    if (!mouseStartNote) return;
+
+    const {
+      location: [startMeasure, startBeat, startSubdivision],
+      note: startNote,
+    } = mouseStartNote;
+
+    if (startNote !== endNote) return;
+
+    const direction = startMeasure < endMeasure ? 1 : -1;
+    if (direction < 0) return;
+  };
 
   const handleOnClickTile =
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {
       const tileKey: TileKey = `${note}-${measure}-${beat}-${subdivision}`;
-      const isSelected = !!selectedTiles().get(tileKey);
-      selectedTiles().set(tileKey, !isSelected);
+      const isSelected =
+        selectedTiles().has(tileKey) &&
+        selectedTiles().get(tileKey) !== TileState.None;
+
+      if (isSelected) {
+        selectedTiles().set(tileKey, TileState.None);
+      } else {
+        if (mouseDownMode() === "single") {
+          selectedTiles().set(tileKey, TileState.Single);
+        }
+        if (mouseDownMode() === "combined") {
+          selectedTiles().set(tileKey, TileState.Combined);
+        }
+      }
       setSelectedTiles(new Map(selectedTiles()));
     };
 
   const copyStateUrl = () => {
-    const url = encodeSequencerToUrl({
-      tiles: selectedTiles(),
-      measures: sequencerMeasures(),
-      beats: sequencerBeats(),
-      subdivisions: sequencerSubdivisions(),
-      bpm: bpm(),
-      octaves: octaves(),
-      baseOctave: baseOctave(),
-      rootNote: rootNote(),
-      scale: scale(),
-      showNonDiatonicNotes: showNonDiatonicNotes(),
-    });
-
+    const url = encodeSequencerToUrl();
     copyToClipboard(url);
   };
 
   return (
     <>
       <div class="max-h-screen max-w-[100vw] overflow-auto py-56 box-border">
-        <div class="flex flex-col gap-0.5">
+        <div class="flex flex-col">
           <For each={notesArray()}>
-            {(note, index) => (
+            {(note) => (
               <div
                 class={clsx(
-                  "flex flex-row gap-2 flex-1 items-center relative px-16",
+                  "flex flex-row flex-1 items-center relative px-16",
                   {
                     "mb-1": note.isRootNote,
                   }
@@ -443,22 +312,71 @@ function SequencerScreen() {
                 </div>
                 <For each={measuresArray()}>
                   {(measure) => (
-                    <div class="flex flex-row gap-1">
+                    <div class="flex flex-row mt-0.5">
                       <For each={beatsArray()}>
                         {(beat) => (
-                          <div class="flex flex-row gap-0.5">
+                          <div class="flex flex-row">
                             <For each={subdivisionArray()}>
-                              {(subdivision) => (
-                                <SequencerTile
-                                  note={note}
-                                  measure={measure}
-                                  beat={beat}
-                                  subdivision={subdivision}
-                                  handleOnMouseOverTile={handleOnMouseOverTile}
-                                  handleOnMouseDownTile={handleOnMouseDownTile}
-                                  handleOnClickTile={handleOnClickTile}
-                                />
-                              )}
+                              {(subdivision) => {
+                                const tileKey: TileKey = `${note.note}-${measure}-${beat}-${subdivision}`;
+
+                                const previousTileLocation =
+                                  decrementPlaybackLocation([
+                                    measure,
+                                    beat,
+                                    subdivision,
+                                  ]);
+                                const previousTileKey: TileKey = `${note.note}-${previousTileLocation[0]}-${previousTileLocation[1]}-${previousTileLocation[2]}`;
+
+                                const nextTileLocation =
+                                  incrementPlaybackLocation([
+                                    measure,
+                                    beat,
+                                    subdivision,
+                                  ]);
+                                const nextTileKey: TileKey = `${note.note}-${nextTileLocation[0]}-${nextTileLocation[1]}-${nextTileLocation[2]}`;
+
+                                const isCurrentLocation = createMemo(() => {
+                                  const [
+                                    locationMeasure,
+                                    locationBeat,
+                                    locationSubdivision,
+                                  ] = playbackLocation();
+
+                                  return (
+                                    measure === locationMeasure &&
+                                    beat === locationBeat &&
+                                    subdivision === locationSubdivision
+                                  );
+                                });
+                                return (
+                                  <SequencerTile
+                                    note={note}
+                                    measure={measure}
+                                    beat={beat}
+                                    subdivision={subdivision}
+                                    onMouseEnterTile={
+                                      handleOnMouseEnterOrLeaveTile
+                                    }
+                                    onMouseLeaveTile={
+                                      handleOnMouseEnterOrLeaveTile
+                                    }
+                                    onMouseDownTile={handleOnMouseDownTile}
+                                    onClickTile={handleOnClickTile}
+                                    isTentativeCombinedNote={tentativeCombinedNotes().includes(
+                                      tileKey
+                                    )}
+                                    tileState={selectedTiles().get(tileKey)}
+                                    nextTileState={selectedTiles().get(
+                                      nextTileKey
+                                    )}
+                                    previousTileState={selectedTiles().get(
+                                      previousTileKey
+                                    )}
+                                    isCurrentLocation={isCurrentLocation()}
+                                  />
+                                );
+                              }}
                             </For>
                           </div>
                         )}
@@ -471,7 +389,33 @@ function SequencerScreen() {
           </For>
         </div>
       </div>
-      <div class="flex items-center justify-center absolute inset-x-8 bottom-8 pointer-events-none">
+      <div class="flex flex-col gap-4 items-center justify-center absolute inset-x-8 bottom-8 pointer-events-none">
+        <div class="flex gap-2 pointer-events-auto">
+          <button
+            onClick={() => setMouseDownMode("single")}
+            class={clsx(
+              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-gray-100 active:translate-y-0.5 active:shadow border-2 transition-colors",
+              {
+                "border-purple-600": mouseDownMode() === "single",
+                "border-transparent": mouseDownMode() !== "single",
+              }
+            )}
+          >
+            <BiRegularDotsHorizontal size={18} />
+          </button>
+          <button
+            onClick={() => setMouseDownMode("combined")}
+            class={clsx(
+              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-gray-100 active:translate-y-0.5 active:shadow border-2 transition-colors",
+              {
+                "border-purple-600": mouseDownMode() === "combined",
+                "border-transparent": mouseDownMode() !== "combined",
+              }
+            )}
+          >
+            <OcHorizontalrule3 size={18} />
+          </button>
+        </div>
         <div class="flex gap-2 pointer-events-auto">
           <Button onClick={onTogglePlayback}>
             {playbackLoop() ? "Stop" : "Start"}
@@ -480,50 +424,7 @@ function SequencerScreen() {
           <Button onClick={copyStateUrl}>Copy URL</Button>
         </div>
       </div>
-      <div class="flex flex-col gap-2 absolute bg-white py-2 px-4 rounded shadow top-4 right-4">
-        <ConfigOptionNumber
-          id="base-octave"
-          label="Base Octave"
-          value={baseOctave}
-          setValue={setBaseOctave}
-          onSetValue={refreshPlaybackLoop}
-        />
-        <ConfigOptionNumber
-          id="octaves"
-          label="Octaves"
-          value={octaves}
-          setValue={setOctaves}
-          onSetValue={refreshPlaybackLoop}
-        />
-        <ConfigOptionNumber
-          id="measures"
-          label="Measures"
-          value={sequencerMeasures}
-          setValue={setSequencerMeasures}
-          onSetValue={refreshPlaybackLoop}
-        />
-        <ConfigOptionNumber
-          id="beats"
-          label="Beats"
-          value={sequencerBeats}
-          setValue={setSequencerBeats}
-          onSetValue={refreshPlaybackLoop}
-        />
-        <ConfigOptionNumber
-          id="subdivisions"
-          label="Subdivisions"
-          value={sequencerSubdivisions}
-          setValue={setSequencerSubdivisions}
-          onSetValue={refreshPlaybackLoop}
-        />
-        <ConfigOptionNumber
-          id="bpm"
-          label="BPM"
-          value={bpm}
-          setValue={setBpm}
-          onSetValue={refreshPlaybackLoop}
-        />
-      </div>
+      <PlaybackAndLengthFloatingConfig />
       <InstrumentManager />
       <ScaleSelection />
     </>

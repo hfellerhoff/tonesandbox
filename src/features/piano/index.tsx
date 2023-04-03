@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
-import PianoOctave from './PianoOctave';
-import useHandlePlayback from './useHandlePlayback';
-import * as Tone from 'tone';
+import { useEffect, useRef, useState } from "preact/hooks";
+import PianoOctave from "./PianoOctave";
+import useHandlePlayback from "./useHandlePlayback";
+import * as Tone from "tone";
 
 interface Props {
   style?: PianoStyle;
@@ -35,7 +35,7 @@ const Piano = ({
     if (pianoRef.current && !noScroll) {
       pianoRef.current.scrollTo({
         left: pianoRef.current.clientWidth / 2,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   }, [pianoRef, noScroll]);
@@ -44,18 +44,18 @@ const Piano = ({
     const onMouseDown = () => {
       setIsMouseDown(true);
 
-      if (Tone.context.state !== 'running') {
+      if (Tone.context.state !== "running") {
         Tone.context.resume();
       }
     };
     const onMouseUp = () => setIsMouseDown(false);
 
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
 
     return () => {
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
     };
   }, []);
 
@@ -63,7 +63,7 @@ const Piano = ({
     <>
       <div
         ref={pianoRef}
-        className='flex-1 flex items-center p-16 w-full h-full select-none overflow-auto whitespace-nowrap'
+        className="flex-1 flex items-center p-16 w-full h-full select-none overflow-auto whitespace-nowrap"
       >
         {octaves.map((octave) => (
           <PianoOctave

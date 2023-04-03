@@ -47,8 +47,10 @@ const PianoKey = ({ note, octave, style, activeNotes, isMouseDown }: Props) => {
       className={clsx(
         "w-3 h-40 rounded border-2 border-gray-100 flex items-end justify-center pb-4 transition-all",
         {
-          "bg-white shadow text-gray-700": !isAccidental,
-          "bg-gray-900 text-transparent w-8 h-20 absolute": isAccidental,
+          "text-gray-700": !isAccidental,
+          "bg-white shadow": !isAccidental && !isActive,
+          "text-transparent w-8 h-20 absolute": isAccidental,
+          "bg-gray-900": isAccidental && !isActive,
           "shadow-inner bg-indigo-400": isActive,
         }
       )}

@@ -8,7 +8,11 @@ import {
   MIDIMessage,
   midiMessagesStore,
 } from "../../shared/midiStore";
-import { instrumentsAtom, selectedInstrumentAtom } from "@shared/instruments";
+import {
+  instrumentsAtom,
+  selectedInstrumentAtom,
+  setGain,
+} from "@shared/instruments";
 import { setSelectedInstrument } from "@shared/instruments";
 
 const useHandlePlayback = () => {
@@ -27,6 +31,7 @@ const useHandlePlayback = () => {
     }
 
     if (!$selectedInstrument) {
+      setGain(1);
       setSelectedInstrument("piano");
     }
   }, [$instruments, $selectedInstrument]);

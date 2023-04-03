@@ -90,6 +90,17 @@ function SequencerScreen() {
 
     let noteIndex = ALL_NOTES.indexOf(rootNote());
 
+    const activeNotesWithoutOctave = Array.from(
+      new Set(
+        Array.from(selectedTiles().entries())
+          .filter(([, state]) => state !== TileState.None)
+          .map(([key]) => {
+            const [note] = key.split("-");
+            return note.substring(0, note.length - 1);
+          })
+      )
+    );
+
     for (let cycle = 0; cycle < octaves(); cycle++) {
       for (let scaleIndex = 0; scaleIndex < ALL_NOTES.length; scaleIndex++) {
         if (noteIndex >= ALL_NOTES.length) {
@@ -100,7 +111,13 @@ function SequencerScreen() {
         const note = ALL_NOTES[noteIndex];
         const isDiatonic = diatonicIndicies.includes(scaleIndex);
 
-        if (showNonDiatonicNotes() || isDiatonic) {
+        const isIncluded = activeNotesWithoutOctave.some(
+          (activeNoteWithoutOctave) => {
+            return note === activeNoteWithoutOctave;
+          }
+        );
+
+        if (showNonDiatonicNotes() || isDiatonic || isIncluded) {
           notes.push({
             note: `${note.split("/")[0]}${octave}`,
             label: `${note}${octave}`,
@@ -242,8 +259,6 @@ function SequencerScreen() {
         }
       }
     };
-
-  createEffect(() => console.log(mouseInteractionIntent()));
 
   const handleOnMouseUpTile = (
     endNote: string,

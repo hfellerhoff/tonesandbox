@@ -416,7 +416,7 @@ function SequencerScreen() {
           </For>
         </div>
       </div>
-      <div class="flex flex-col sm:flex-row gap-0 sm:gap-12 items-center justify-center absolute inset-x-8 bottom-8 pointer-events-none">
+      <div class="flex flex-col sm:flex-row gap-0 sm:gap-12 items-center justify-center absolute inset-x-8 bottom-4 sm:bottom-8 pointer-events-none">
         <div class="flex gap-2 pointer-events-auto">
           <button
             onClick={() => setMouseDownMode("single")}

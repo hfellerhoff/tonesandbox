@@ -82,6 +82,7 @@ export const isLocationAfter = (
 ) => compareLocations(location1, location2) === 1;
 
 export const stopPlaybackLoop = () => {
+  Tone.Transport.stop();
   clearInterval(playbackLoop());
   setPlaybackLoop(0);
   const instrument = selectedInstrumentAtom.get();
@@ -248,6 +249,7 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
 
 export const createPlaybackLoop = () => {
   Tone.Transport.bpm.value = bpm();
+  Tone.Transport.start();
 
   playSelectedNotes(playbackLocation());
 

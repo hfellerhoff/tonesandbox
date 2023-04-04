@@ -316,24 +316,21 @@ function SequencerScreen() {
 
   return (
     <>
-      <div class="h-screen max-w-[100vw] overflow-auto py-56 box-border">
-        <div
-          class="flex flex-col"
-          style={{
-            scale: zoom(),
-          }}
-        >
+      <div
+        class="h-screen w-screen overflow-auto py-56 box-border mx-auto grid place-items-center px-32"
+        style={{
+          scale: zoom(),
+        }}
+      >
+        <div class="flex flex-col">
           <For each={notesArray()}>
             {(note) => (
               <div
-                class={clsx(
-                  "flex flex-row flex-1 items-center relative px-16",
-                  {
-                    "mb-1": note.isRootNote,
-                  }
-                )}
+                class={clsx("flex flex-row flex-1 items-center relative", {
+                  "mb-1": note.isRootNote,
+                })}
               >
-                <div class="mr-1 min-w-[3rem] absolute left-4">
+                <div class="mr-1 min-w-[3rem] absolute -left-14 text-right">
                   <div class="text-gray-500 text-xs font-bold pointer-events-none select-none">
                     {note.label}
                   </div>

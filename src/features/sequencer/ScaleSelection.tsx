@@ -28,7 +28,7 @@ const setScale = (value: string) => {
 };
 
 export default function ScaleSelection() {
-  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 768);
+  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 1000);
 
   const scale = useStore(scaleAtom);
   const rootNote = useStore(rootNoteAtom);

@@ -193,7 +193,7 @@ function RenderConfigNode(props: {
 }
 
 export default function FloatingInstrumentManager() {
-  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 768);
+  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 1000);
   const [isCustomizing, setIsCustomizing] = createSignal(false);
 
   const selectedInstrument = useStore(selectedInstrumentAtom);

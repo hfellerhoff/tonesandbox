@@ -62,7 +62,7 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
 }
 
 export default function PlaybackAndLengthFloatingConfig() {
-  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 768);
+  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 1000);
 
   return (
     <Show

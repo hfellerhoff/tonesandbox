@@ -1,4 +1,5 @@
 import * as Tone from "tone";
+import { Note } from "theory.js";
 import { selectedInstrumentAtom } from "@shared/instruments";
 import { createSignal } from "solid-js";
 import {
@@ -20,6 +21,37 @@ export const [playbackLocation, setPlaybackLocation] =
 
 export const setLocationToStopped = () => setPlaybackLocation([-1, -1, -1]);
 export const setLocationToBeginning = () => setPlaybackLocation([0, 0, 0]);
+
+export const SUBDIVISION_OFFSET = 4;
+export const subtractFromPlaybackLocation = (
+  location: PlaybackLocation,
+  subdivisions: number
+) => {
+  let [measure, beat, subdivision] = location;
+
+  for (let i = 0; i < subdivisions; i++) {
+    if (subdivision === 0) {
+      if (beat === 0) {
+        if (measure === 0) {
+          measure = sequencerMeasures() - 1;
+          beat = sequencerBeats() - 1;
+          subdivision = sequencerSubdivisions() - 1;
+        } else {
+          measure = measure - 1;
+          beat = sequencerBeats() - 1;
+          subdivision = sequencerSubdivisions() - 1;
+        }
+      } else {
+        beat = beat - 1;
+        subdivision = sequencerSubdivisions() - 1;
+      }
+    } else {
+      subdivision = subdivision - 1;
+    }
+  }
+
+  return [measure, beat, subdivision] as PlaybackLocation;
+};
 
 const compareLocations = (
   location1: PlaybackLocation,
@@ -54,7 +86,7 @@ export const stopPlaybackLoop = () => {
   setPlaybackLoop(0);
   const instrument = selectedInstrumentAtom.get();
   if (instrument) {
-    instrument.releaseAll();
+    instrument.releaseAll(Tone.now());
   }
 };
 
@@ -80,6 +112,21 @@ export const incrementPlaybackLocation = ([
   }
 
   return [nextMeasure, nextBeat, nextSubdivision] as PlaybackLocation;
+};
+
+const getVelocity = (note: string) => {
+  const midiValue = new Note(note).midi;
+  const velocityValue = velocity();
+
+  const interpolatedMidi = midiValue / 127;
+
+  // Cut volume of high end, maintain volume of low end
+  const computedInterpolatedMidi = Math.sin((interpolatedMidi * Math.PI) / 2);
+
+  const velocityToSubtract = velocityValue * computedInterpolatedMidi;
+  const computedVelocity = velocityValue - velocityToSubtract;
+
+  return computedVelocity;
 };
 
 export const decrementPlaybackLocation = ([
@@ -178,20 +225,30 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
     )
     .map(({ note }) => note);
 
-  instrument.triggerRelease(endedSelectedCombinedNotes);
+  const toneTime =
+    Tone.now() + Tone.Time(`0:0:${SUBDIVISION_OFFSET}`).toSeconds();
+
+  instrument.triggerRelease(endedSelectedCombinedNotes, toneTime);
 
   const noteLengthSeconds = 60 / sequencerSubdivisions() / bpm();
-  instrument.triggerAttackRelease(
-    currentSelectedSingleNotes,
-    noteLengthSeconds,
-    Tone.now(),
-    velocity()
-  );
 
-  instrument.triggerAttack(newlySelectedCombinedNotes, Tone.now(), velocity());
+  currentSelectedSingleNotes.forEach((note) => {
+    instrument.triggerAttackRelease(
+      note,
+      noteLengthSeconds,
+      toneTime,
+      getVelocity(note)
+    );
+  });
+
+  newlySelectedCombinedNotes.forEach((note) => {
+    instrument.triggerAttack(note, toneTime, getVelocity(note));
+  });
 };
 
 export const createPlaybackLoop = () => {
+  Tone.Transport.bpm.value = bpm();
+
   playSelectedNotes(playbackLocation());
 
   const intervalFrequency =

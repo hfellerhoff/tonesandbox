@@ -18,6 +18,8 @@ import type { SequencerNote } from "./SequencerTile";
 import SequencerTile from "./SequencerTile";
 import {
   PlaybackLocation,
+  SUBDIVISION_OFFSET,
+  subtractFromPlaybackLocation,
   decrementPlaybackLocation,
   incrementPlaybackLocation,
   isLocationBefore,
@@ -358,7 +360,10 @@ function SequencerScreen() {
                                     locationMeasure,
                                     locationBeat,
                                     locationSubdivision,
-                                  ] = playbackLocation();
+                                  ] = subtractFromPlaybackLocation(
+                                    playbackLocation(),
+                                    SUBDIVISION_OFFSET
+                                  );
 
                                   return (
                                     measure === locationMeasure &&

@@ -140,8 +140,8 @@ export default function PlaybackAndLengthFloatingConfig() {
             type="range"
             id="zoom"
             value={zoom()}
-            min={0.5}
-            max={1.5}
+            min={0.1}
+            max={2}
             step={0.01}
             onChange={(e) => {
               setZoom(parseFloat(e.target.value));

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { createEffect, createMemo } from "solid-js";
+import { Accessor, createEffect, createMemo } from "solid-js";
 import { type TileKey, selectedTiles, TileState } from "./state";
 import { playbackLocation } from "./playback";
 
@@ -39,6 +39,8 @@ export default function SequencerTile(props: SequencerTileProps) {
   const isStateSingle = createMemo(() => tileState() === TileState.Single);
   const isStateCombined = createMemo(() => tileState() === TileState.Combined);
 
+  const tileKey: TileKey = `${props.note.note}-${props.measure}-${props.beat}-${props.subdivision}`;
+
   const connectToNextNote = createMemo(() => {
     return isStateCombined() && props.nextTileState === TileState.Combined;
   });
@@ -47,15 +49,23 @@ export default function SequencerTile(props: SequencerTileProps) {
   });
 
   const isFirstSubdivision = props.subdivision === 0 && props.beat !== 0;
+  const isFirstBeat =
+    props.beat === 0 && props.subdivision === 0 && props.measure !== 0;
 
   return (
     <input
       type="checkbox"
       class={clsx("w-8 h-8 appearance-none rounded-sm", {
-        "bg-white": props.note.isDiatonic && isStateNone(),
-        "bg-gray-100": !props.note.isDiatonic && isStateNone(),
+        "bg-white":
+          props.note.isDiatonic &&
+          isStateNone() &&
+          !props.isTentativeCombinedNote,
+        "bg-gray-100":
+          !props.note.isDiatonic &&
+          isStateNone() &&
+          !props.isTentativeCombinedNote,
 
-        "bg-gray-400": !isStateNone(),
+        "bg-gray-400": !isStateNone() && !props.isTentativeCombinedNote,
 
         "bg-opacity-75": !props.isCurrentLocation,
         "bg-opacity-100": props.isCurrentLocation,
@@ -65,9 +75,11 @@ export default function SequencerTile(props: SequencerTileProps) {
 
         "w-[2.125rem]": connectToPreviousNote() && !isFirstSubdivision,
         "w-[2.25rem]": connectToPreviousNote() && isFirstSubdivision,
+        "w-[2.5rem]": connectToPreviousNote() && isFirstBeat,
 
         "ml-0.5": !connectToPreviousNote() && !isFirstSubdivision,
         "ml-1": !connectToPreviousNote() && isFirstSubdivision,
+        "ml-2": !connectToPreviousNote() && isFirstBeat,
 
         "bg-gray-300": props.isTentativeCombinedNote,
       })}

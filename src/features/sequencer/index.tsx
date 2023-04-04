@@ -4,7 +4,7 @@ import copyToClipboard from "@shared/utils/copyToClipboard";
 import clsx from "clsx";
 import { BiRegularDotsHorizontal } from "solid-icons/bi";
 import { OcHorizontalrule3 } from "solid-icons/oc";
-import { For, createMemo, createSignal } from "solid-js";
+import { For, createEffect, createMemo, createSignal } from "solid-js";
 import Button from "./Button";
 import PlaybackAndLengthFloatingConfig from "./PlaybackAndLengthFloatingConfig";
 import ScaleSelection, {

@@ -21,3 +21,5 @@ export type SelectedTileMap = Map<TileKey, TileState>;
 export const [selectedTiles, setSelectedTiles] = createSignal<SelectedTileMap>(
   new Map()
 );
+
+export const [zoom, setZoom] = createSignal(1);

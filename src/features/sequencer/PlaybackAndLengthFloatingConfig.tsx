@@ -11,6 +11,8 @@ import {
   setSequencerBeats,
   setSequencerMeasures,
   setSequencerSubdivisions,
+  setZoom,
+  zoom,
 } from "./state";
 import {
   refreshPlaybackLoop,
@@ -127,6 +129,22 @@ export default function PlaybackAndLengthFloatingConfig() {
             onChange={(e) => {
               setVelocity(parseFloat(e.target.value));
               refreshPlaybackLoop();
+            }}
+          />
+        </div>
+        <div class="flex flex-row gap-2 items-center justify-between">
+          <label class="text-gray-500 text-sm" for="zoom">
+            Zoom
+          </label>
+          <input
+            type="range"
+            id="zoom"
+            value={zoom()}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => {
+              setZoom(parseFloat(e.target.value));
             }}
           />
         </div>

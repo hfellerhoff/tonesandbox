@@ -40,6 +40,7 @@ import {
   setIsMouseDown,
   setSelectedTiles,
   type TileKey,
+  zoom,
 } from "./state";
 import { encodeSequencerToUrl } from "./urlUtils";
 
@@ -316,7 +317,12 @@ function SequencerScreen() {
   return (
     <>
       <div class="h-screen max-w-[100vw] overflow-auto py-56 box-border">
-        <div class="flex flex-col">
+        <div
+          class="flex flex-col"
+          style={{
+            scale: zoom(),
+          }}
+        >
           <For each={notesArray()}>
             {(note) => (
               <div

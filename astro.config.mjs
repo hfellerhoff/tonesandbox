@@ -3,6 +3,7 @@ import tailwind from "@astrojs/tailwind";
 import solidJs from "@astrojs/solid-js";
 import preact from "@astrojs/preact";
 import svelte from "@astrojs/svelte";
+import AstroPWA from "@vite-pwa/astro";
 
 // https://astro.build/config
 export default defineConfig({

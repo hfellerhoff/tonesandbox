@@ -1,7 +1,7 @@
 import { useStore } from "@nanostores/solid";
 import { atom } from "nanostores";
-import { For, Show, createMemo, createSignal } from "solid-js";
 import { BsBarChartFill } from "solid-icons/bs";
+import { For, Show, createMemo, createSignal } from "solid-js";
 
 export const scaleAtom = atom([0, 2, 4, 7, 9]);
 export const rootNoteAtom = atom("C");
@@ -28,7 +28,7 @@ const setScale = (value: string) => {
 };
 
 export default function ScaleSelection() {
-  const [isExpanded, setIsExpanded] = createSignal(false);
+  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 768);
 
   const scale = useStore(scaleAtom);
   const rootNote = useStore(rootNoteAtom);

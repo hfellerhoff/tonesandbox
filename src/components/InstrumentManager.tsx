@@ -10,8 +10,8 @@ import {
 } from "@shared/instruments";
 import { isToneStartedStore } from "@shared/isToneStartedStore";
 import { CgPiano } from "solid-icons/cg";
+import { VsArrowLeft, VsSettings } from "solid-icons/vs";
 import { For, Match, Show, Switch, createSignal } from "solid-js";
-import { VsSettings, VsArrowLeft } from "solid-icons/vs";
 
 export function InstrumentManagerContent() {
   const isToneStarted = useStore(isToneStartedStore);
@@ -193,7 +193,7 @@ function RenderConfigNode(props: {
 }
 
 export default function FloatingInstrumentManager() {
-  const [isExpanded, setIsExpanded] = createSignal(false);
+  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 768);
   const [isCustomizing, setIsCustomizing] = createSignal(false);
 
   const selectedInstrument = useStore(selectedInstrumentAtom);

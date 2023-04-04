@@ -1,5 +1,13 @@
+import { VsSettings } from "solid-icons/vs";
 import { Accessor, Setter, Show, createSignal } from "solid-js";
 import Input from "./Input";
+import {
+  bpm,
+  refreshPlaybackLoop,
+  setBpm,
+  setVelocity,
+  velocity,
+} from "./playback";
 import {
   baseOctave,
   octaves,
@@ -14,14 +22,6 @@ import {
   setZoom,
   zoom,
 } from "./state";
-import {
-  refreshPlaybackLoop,
-  bpm,
-  setBpm,
-  setVelocity,
-  velocity,
-} from "./playback";
-import { VsSettings } from "solid-icons/vs";
 
 type ConfigureNumberInputProps = {
   id: string;
@@ -62,7 +62,7 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
 }
 
 export default function PlaybackAndLengthFloatingConfig() {
-  const [isExpanded, setIsExpanded] = createSignal(false);
+  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 768);
 
   return (
     <Show

@@ -172,6 +172,9 @@ function SequencerScreen() {
       localStartLocation[2] = nextLocation[2];
     }
 
+    const finalTileKey: TileKey = `${startNote}-${endLocation[0]}-${endLocation[1]}-${endLocation[2]}`;
+    tentativeTileKeys.push(finalTileKey);
+
     return tentativeTileKeys;
   });
 
@@ -381,12 +384,14 @@ function SequencerScreen() {
                                       tileKey
                                     )}
                                     tileState={selectedTiles().get(tileKey)}
-                                    nextTileState={selectedTiles().get(
-                                      nextTileKey
-                                    )}
-                                    previousTileState={selectedTiles().get(
-                                      previousTileKey
-                                    )}
+                                    nextTileState={
+                                      selectedTiles().get(nextTileKey) ??
+                                      TileState.None
+                                    }
+                                    previousTileState={
+                                      selectedTiles().get(previousTileKey) ??
+                                      TileState.None
+                                    }
                                     isCurrentLocation={isCurrentLocation()}
                                   />
                                 );

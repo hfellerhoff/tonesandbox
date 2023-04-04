@@ -6,7 +6,6 @@ import { BiRegularDotsHorizontal } from "solid-icons/bi";
 import { IoCheckmark, IoLink, IoPause, IoPlay, IoTrash } from "solid-icons/io";
 import { OcHorizontalrule3 } from "solid-icons/oc";
 import { For, createMemo, createSignal } from "solid-js";
-import Button from "./Button";
 import PlaybackAndLengthFloatingConfig from "./PlaybackAndLengthFloatingConfig";
 import ScaleSelection, {
   ALL_NOTES,
@@ -39,8 +38,8 @@ import {
   sequencerSubdivisions,
   setIsMouseDown,
   setSelectedTiles,
-  type TileKey,
   zoom,
+  type TileKey,
 } from "./state";
 import { encodeSequencerToUrl } from "./urlUtils";
 

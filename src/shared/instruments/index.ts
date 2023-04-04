@@ -1,19 +1,25 @@
 import { action, atom, computed } from "nanostores";
 import * as Tone from "tone";
-import { PIANO } from "./default/piano";
-import { SAWTOOTH_SYNTH } from "./default/sawtooth-synth";
-import { SOFT_SYNTH } from "./default/soft-synth";
-import type { InstrumentTemplate } from "./types";
+import { PIANO } from "./presets/piano";
+import { SAWTOOTH_SYNTH } from "./presets/sawtooth-synth";
+import { SOFT_SYNTH } from "./presets/soft-synth";
+import type {
+  AllowedToneInstrument,
+  AllowedToneMonoInstrument,
+  InstrumentTemplate,
+} from "./types";
+import { KALIMBA_SYNTH } from "./presets/kalimba-synth";
+import { BASS_GUITAR_SYNTH } from "./presets/bass-guitar-synth";
+import { CUSTOM_SYNTH } from "./presets/custom-synth";
 
-type AllowedToneInstruments = Tone.Synth | Tone.Sampler;
 type InstrumentAPI = Tone.PolySynth | Tone.Sampler;
 
 const POLYPHONIC_SYNTH_KEY = "_";
 
-const isVoiceSynth = (
-  voice: AllowedToneInstruments,
+const isVoiceMonophonic = (
+  voice: AllowedToneInstrument,
   instrumentTemplate: InstrumentTemplate
-): voice is Tone.Synth => {
+): voice is AllowedToneMonoInstrument => {
   return instrumentTemplate.type === "single";
 };
 
@@ -21,7 +27,7 @@ export interface Instrument {
   slug: string;
   name: string;
   template: InstrumentTemplate;
-  voices: Map<Tone.Unit.Frequency, AllowedToneInstruments>;
+  voices: Map<Tone.Unit.Frequency, AllowedToneInstrument>;
   triggerAttack: (...args: Parameters<InstrumentAPI["triggerAttack"]>) => void;
   triggerRelease: (
     ...args: Parameters<InstrumentAPI["triggerRelease"]>
@@ -43,6 +49,8 @@ export interface Instrument {
 export const instrumentsAtom = atom<InstrumentTemplate[]>([
   SOFT_SYNTH,
   SAWTOOTH_SYNTH,
+  KALIMBA_SYNTH,
+  BASS_GUITAR_SYNTH,
   PIANO,
 ]);
 
@@ -66,6 +74,50 @@ const getOrCreateVoice = (
   return voice;
 };
 
+export const resetInstrumentConfig = action(
+  selectedInstrumentAtom,
+  "resetInstrumentConfig",
+  (previousInstrumentStore) => {
+    const previousInstrument = previousInstrumentStore.get();
+    if (!previousInstrument) return null;
+
+    const instrumentTemplate = instrumentsAtom
+      .get()
+      .find((instrument) => instrument.slug === previousInstrument.slug);
+    if (!instrumentTemplate) return null;
+
+    instrumentTemplate.config = { ...instrumentTemplate.defaultConfig };
+
+    previousInstrument.disconnect();
+    previousInstrument.voices.clear();
+    previousInstrument.toDestination();
+
+    return previousInstrument;
+  }
+);
+
+export const updateSelectedInstrumentConfig = action(
+  selectedInstrumentAtom,
+  "setSelectedInstrumentConfig",
+  (previousInstrumentStore) => {
+    const previousInstrument = previousInstrumentStore.get();
+    if (!previousInstrument) return null;
+
+    previousInstrument.disconnect();
+    previousInstrument.voices.clear();
+    previousInstrument.toDestination();
+
+    if (previousInstrument.template.type === "poly") {
+      previousInstrument.voices.set(
+        POLYPHONIC_SYNTH_KEY,
+        previousInstrument.template.create()
+      );
+    }
+
+    return previousInstrument;
+  }
+);
+
 export const setSelectedInstrument = action(
   selectedInstrumentAtom,
   "setSelectedInstrument",
@@ -81,7 +133,7 @@ export const setSelectedInstrument = action(
       .find((instrument) => instrument.slug === slug);
     if (!instrumentTemplate) return null;
 
-    const voices = new Map<Tone.Unit.Frequency, AllowedToneInstruments>();
+    const voices = new Map<Tone.Unit.Frequency, AllowedToneInstrument>();
 
     if (instrumentTemplate.type === "poly") {
       voices.set(POLYPHONIC_SYNTH_KEY, instrumentTemplate.create());
@@ -107,7 +159,7 @@ export const setSelectedInstrument = action(
         if (Array.isArray(notes)) {
           notes.forEach((note) => {
             const voice = getOrCreateVoice(voices, note, instrumentTemplate);
-            if (isVoiceSynth(voice, instrumentTemplate)) {
+            if (isVoiceMonophonic(voice, instrumentTemplate)) {
               voice.triggerRelease(time);
             } else {
               voice.triggerRelease(note, time);
@@ -115,7 +167,7 @@ export const setSelectedInstrument = action(
           });
         } else {
           const voice = getOrCreateVoice(voices, notes, instrumentTemplate);
-          if (isVoiceSynth(voice, instrumentTemplate)) {
+          if (isVoiceMonophonic(voice, instrumentTemplate)) {
             voice.triggerRelease(time);
           } else {
             voice.triggerRelease(notes, time);
@@ -131,6 +183,7 @@ export const setSelectedInstrument = action(
         if (Array.isArray(notes)) {
           notes.forEach((note) => {
             const voice = getOrCreateVoice(voices, note, instrumentTemplate);
+            console.log(voice);
             if (!Array.isArray(duration)) {
               voice.triggerAttackRelease(note, duration, time, velocity);
             } else {
@@ -151,7 +204,7 @@ export const setSelectedInstrument = action(
       },
       releaseAll: (time = undefined) => {
         voices.forEach((voice) => {
-          if (isVoiceSynth(voice, instrumentTemplate)) {
+          if (isVoiceMonophonic(voice, instrumentTemplate)) {
             voice.triggerRelease(time);
           } else {
             voice.releaseAll(time);

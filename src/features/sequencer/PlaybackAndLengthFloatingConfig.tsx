@@ -29,6 +29,8 @@ type ConfigureNumberInputProps = {
   value: Accessor<number>;
   setValue: Setter<number>;
   onSetValue: () => void;
+  min?: number;
+  max?: number;
 };
 
 function ConfigureNumberInput(props: ConfigureNumberInputProps) {
@@ -52,6 +54,8 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
         onBlur={onChange}
         onSubmit={onChange}
         class="text-sm max-w-[6rem] text-right"
+        min={props.min}
+        max={props.max}
       />
     </div>
   );
@@ -79,6 +83,8 @@ export default function PlaybackAndLengthFloatingConfig() {
           value={baseOctave}
           setValue={setBaseOctave}
           onSetValue={refreshPlaybackLoop}
+          min={0}
+          max={8}
         />
         <ConfigureNumberInput
           id="octaves"
@@ -86,6 +92,8 @@ export default function PlaybackAndLengthFloatingConfig() {
           value={octaves}
           setValue={setOctaves}
           onSetValue={refreshPlaybackLoop}
+          min={1}
+          max={8}
         />
         <ConfigureNumberInput
           id="measures"
@@ -93,6 +101,8 @@ export default function PlaybackAndLengthFloatingConfig() {
           value={sequencerMeasures}
           setValue={setSequencerMeasures}
           onSetValue={refreshPlaybackLoop}
+          min={1}
+          max={128}
         />
         <ConfigureNumberInput
           id="beats"
@@ -100,6 +110,8 @@ export default function PlaybackAndLengthFloatingConfig() {
           value={sequencerBeats}
           setValue={setSequencerBeats}
           onSetValue={refreshPlaybackLoop}
+          min={1}
+          max={128}
         />
         <ConfigureNumberInput
           id="subdivisions"
@@ -107,6 +119,8 @@ export default function PlaybackAndLengthFloatingConfig() {
           value={sequencerSubdivisions}
           setValue={setSequencerSubdivisions}
           onSetValue={refreshPlaybackLoop}
+          min={1}
+          max={128}
         />
         <ConfigureNumberInput
           id="bpm"
@@ -114,6 +128,7 @@ export default function PlaybackAndLengthFloatingConfig() {
           value={bpm}
           setValue={setBpm}
           onSetValue={refreshPlaybackLoop}
+          min={1}
         />
         <div class="flex flex-row gap-2 items-center justify-between">
           <label class="text-gray-500 text-sm" for="velocity">
@@ -140,8 +155,8 @@ export default function PlaybackAndLengthFloatingConfig() {
             type="range"
             id="zoom"
             value={zoom()}
-            min={0.1}
-            max={2}
+            min={0.2}
+            max={1.8}
             step={0.1}
             onChange={(e) => {
               setZoom(parseFloat(e.target.value));

@@ -316,13 +316,15 @@ function SequencerScreen() {
 
   return (
     <>
-      <div
-        class="h-screen w-screen overflow-auto py-56 box-border mx-auto grid place-items-center px-32"
-        style={{
-          scale: zoom(),
-        }}
-      >
-        <div class="flex flex-col">
+      <div class="h-screen w-screen overflow-auto py-56 box-border mx-auto grid place-items-center px-32">
+        <div
+          class="flex flex-col items-center"
+          style={{
+            transform: `scale(${zoom()})`,
+            "transform-origin": "50% 50%",
+            width: `${100 * (1 / zoom())}%`,
+          }}
+        >
           <For each={notesArray()}>
             {(note) => (
               <div

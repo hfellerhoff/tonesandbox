@@ -34,8 +34,6 @@ export function encodeSequencerToUrl() {
     .filter(([, value]) => value !== TileState.None)
     .map(([key, value]) => `${key}${SEPARATOR}${value}`);
 
-  console.log(selectedTileArray);
-
   const params = new URLSearchParams({
     t: btoa(JSON.stringify(selectedTileArray)),
     m: measures.toString(),

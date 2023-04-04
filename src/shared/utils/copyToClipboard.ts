@@ -1,6 +1,6 @@
 // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
 function fallbackCopyTextToClipboard(text: string) {
-  var textArea = document.createElement("textarea");
+  const textArea = document.createElement("textarea");
   textArea.value = text;
 
   // Avoid scrolling to bottom
@@ -13,12 +13,9 @@ function fallbackCopyTextToClipboard(text: string) {
   textArea.select();
 
   try {
-    var successful = document.execCommand("copy");
-    var msg = successful ? "successful" : "unsuccessful";
-    console.log("Fallback: Copying text command was " + msg);
-  } catch (err) {
-    console.error("Fallback: Oops, unable to copy", err);
-  }
+    const successful = document.execCommand("copy");
+    const msg = successful ? "successful" : "unsuccessful";
+  } catch (err) {}
 
   document.body.removeChild(textArea);
 }
@@ -28,12 +25,5 @@ export default function copyToClipboard(text: string) {
     fallbackCopyTextToClipboard(text);
     return;
   }
-  navigator.clipboard.writeText(text).then(
-    function () {
-      console.log("Async: Copying to clipboard was successful!");
-    },
-    function (err) {
-      console.error("Async: Could not copy text: ", err);
-    }
-  );
+  navigator.clipboard.writeText(text);
 }

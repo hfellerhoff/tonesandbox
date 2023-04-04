@@ -43,7 +43,7 @@ const useHandlePlayback = () => {
         const note = new Scale(new Note(message[1]), []).getStringArray()[0];
         const velocity = message[2] / 127;
 
-        const instrument = $selectedInstrument.instrument;
+        const instrument = $selectedInstrument;
 
         switch (type) {
           // Note On

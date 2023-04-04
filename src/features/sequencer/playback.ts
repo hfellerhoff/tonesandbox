@@ -52,7 +52,7 @@ export const isLocationAfter = (
 export const stopPlaybackLoop = () => {
   clearInterval(playbackLoop());
   setPlaybackLoop(0);
-  const instrument = selectedInstrumentAtom.get()?.instrument;
+  const instrument = selectedInstrumentAtom.get();
   if (instrument) {
     instrument.releaseAll();
   }
@@ -107,7 +107,7 @@ export const decrementPlaybackLocation = ([
 };
 
 export const playSelectedNotes = (location: PlaybackLocation) => {
-  const instrument = selectedInstrumentAtom.get()?.instrument;
+  const instrument = selectedInstrumentAtom.get();
   if (!instrument) return;
 
   const [currentMeasure, currentBeat, currentSubdivision] = location;

@@ -1,7 +1,8 @@
-import type { Sampler, PolySynth } from "tone";
+import type { Sampler, Synth } from "tone";
 
 export interface InstrumentTemplate {
   slug: string;
   name: string;
-  create: () => Sampler | PolySynth;
+  type: "single" | "poly";
+  create: () => Sampler | Synth;
 }

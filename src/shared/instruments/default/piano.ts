@@ -5,6 +5,7 @@ import type { InstrumentTemplate } from "../types";
 export const PIANO: InstrumentTemplate = {
   name: "Piano",
   slug: "piano",
+  type: "poly",
   create: () =>
     new Tone.Sampler({
       ...createSampler({

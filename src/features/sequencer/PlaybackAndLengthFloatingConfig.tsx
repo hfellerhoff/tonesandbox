@@ -1,4 +1,4 @@
-import type { Accessor, Setter } from "solid-js";
+import { Accessor, Setter, Show, createSignal } from "solid-js";
 import Input from "./Input";
 import {
   baseOctave,
@@ -19,6 +19,7 @@ import {
   setVelocity,
   velocity,
 } from "./playback";
+import { VsSettings } from "solid-icons/vs";
 
 type ConfigureNumberInputProps = {
   id: string;
@@ -38,7 +39,7 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
   };
 
   return (
-    <div class="flex flex-row gap-2 items-center justify-between max-w-[12rem]">
+    <div class="flex flex-row gap-2 items-center justify-between">
       <label class="text-gray-500 text-sm" for={props.id}>
         {props.label}
       </label>
@@ -55,67 +56,87 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
 }
 
 export default function PlaybackAndLengthFloatingConfig() {
+  const [isExpanded, setIsExpanded] = createSignal(false);
+
   return (
-    <div class="flex flex-col gap-2 absolute bg-white py-2 px-4 rounded shadow top-4 right-4">
-      <ConfigureNumberInput
-        id="base-octave"
-        label="Base Octave"
-        value={baseOctave}
-        setValue={setBaseOctave}
-        onSetValue={refreshPlaybackLoop}
-      />
-      <ConfigureNumberInput
-        id="octaves"
-        label="Octaves"
-        value={octaves}
-        setValue={setOctaves}
-        onSetValue={refreshPlaybackLoop}
-      />
-      <ConfigureNumberInput
-        id="measures"
-        label="Measures"
-        value={sequencerMeasures}
-        setValue={setSequencerMeasures}
-        onSetValue={refreshPlaybackLoop}
-      />
-      <ConfigureNumberInput
-        id="beats"
-        label="Beats"
-        value={sequencerBeats}
-        setValue={setSequencerBeats}
-        onSetValue={refreshPlaybackLoop}
-      />
-      <ConfigureNumberInput
-        id="subdivisions"
-        label="Subdivisions"
-        value={sequencerSubdivisions}
-        setValue={setSequencerSubdivisions}
-        onSetValue={refreshPlaybackLoop}
-      />
-      <ConfigureNumberInput
-        id="bpm"
-        label="BPM"
-        value={bpm}
-        setValue={setBpm}
-        onSetValue={refreshPlaybackLoop}
-      />
-      <div class="flex flex-row gap-2 items-center justify-between max-w-[12rem]">
-        <label class="text-gray-500 text-sm" for="velocity">
-          Velocity
-        </label>
-        <input
-          type="range"
-          id="velocity"
-          value={velocity()}
-          min={0}
-          max={1}
-          step={0.01}
-          onChange={(e) => {
-            setVelocity(parseFloat(e.target.value));
-            refreshPlaybackLoop();
-          }}
+    <Show
+      when={isExpanded()}
+      fallback={
+        <button
+          class="p-4 absolute bg-white rounded shadow top-4 right-4"
+          onClick={() => setIsExpanded(true)}
+        >
+          <VsSettings />
+        </button>
+      }
+    >
+      <div class="flex flex-col gap-2 absolute bg-white p-4 rounded shadow top-4 right-4 w-56 z-20">
+        <ConfigureNumberInput
+          id="base-octave"
+          label="Base Octave"
+          value={baseOctave}
+          setValue={setBaseOctave}
+          onSetValue={refreshPlaybackLoop}
         />
+        <ConfigureNumberInput
+          id="octaves"
+          label="Octaves"
+          value={octaves}
+          setValue={setOctaves}
+          onSetValue={refreshPlaybackLoop}
+        />
+        <ConfigureNumberInput
+          id="measures"
+          label="Measures"
+          value={sequencerMeasures}
+          setValue={setSequencerMeasures}
+          onSetValue={refreshPlaybackLoop}
+        />
+        <ConfigureNumberInput
+          id="beats"
+          label="Beats"
+          value={sequencerBeats}
+          setValue={setSequencerBeats}
+          onSetValue={refreshPlaybackLoop}
+        />
+        <ConfigureNumberInput
+          id="subdivisions"
+          label="Subdivisions"
+          value={sequencerSubdivisions}
+          setValue={setSequencerSubdivisions}
+          onSetValue={refreshPlaybackLoop}
+        />
+        <ConfigureNumberInput
+          id="bpm"
+          label="BPM"
+          value={bpm}
+          setValue={setBpm}
+          onSetValue={refreshPlaybackLoop}
+        />
+        <div class="flex flex-row gap-2 items-center justify-between">
+          <label class="text-gray-500 text-sm" for="velocity">
+            Velocity
+          </label>
+          <input
+            type="range"
+            id="velocity"
+            value={velocity()}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(e) => {
+              setVelocity(parseFloat(e.target.value));
+              refreshPlaybackLoop();
+            }}
+          />
+        </div>
+        <button
+          class="py-1 px-2 bg-gray-100 rounded"
+          onClick={() => setIsExpanded(false)}
+        >
+          Close
+        </button>
       </div>
-    </div>
+    </Show>
   );
 }

@@ -108,6 +108,18 @@ export default function SequencerTile(props: SequencerTileProps) {
         props.beat,
         props.subdivision
       )}
+      onTouchStart={props.onMouseDownTile(
+        props.note.note,
+        props.measure,
+        props.beat,
+        props.subdivision
+      )}
+      onTouchEnd={props.onMouseLeaveTile(
+        props.note.note,
+        props.measure,
+        props.beat,
+        props.subdivision
+      )}
     />
   );
 }

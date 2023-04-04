@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon';
+import { Icon } from "astro-icon";
 
 export interface Props {
   title: string;
@@ -9,35 +9,35 @@ const { title } = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
   <head>
-    <meta charset='UTF-8' />
-    <meta name='viewport' content='width=device-width' />
-    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
-    <meta name='generator' content={Astro.generator} />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     {
       import.meta.env.PROD && (
         <script
           async
           defer
-          data-website-id='e0135a7d-bd11-40a4-b153-336bccac133b'
-          src='https://umami.henryfellerhoff.com/umami.js'
+          data-website-id="e0135a7d-bd11-40a4-b153-336bccac133b"
+          src="https://umami.henryfellerhoff.com/umami.js"
         />
       )
     }
   </head>
-  <body class='bg-gray-200 h-screen overflow-hidden'>
-    <header class='bg-white rounded shadow absolute top-4 left-4'>
+  <body class="bg-gray-200 h-screen overflow-hidden">
+    <header class="bg-white rounded shadow absolute top-4 left-4 z-10">
       <a
-        class='px-4 py-2 flex items-center justify-center gap-2 rounded border-transparent hover:border-purple-600 border-2 transition-all'
-        href='/'
+        class="px-4 py-2 flex items-center justify-center gap-2 rounded border-transparent hover:border-purple-600 border-2 transition-all"
+        href="/"
       >
-        <Icon pack='lucide' name='shovel' /><h1 class=''>Tone Sandbox</h1>
+        <Icon pack="lucide" name="shovel" /><h1 class="">Tone Sandbox</h1>
       </a>
     </header>
     <slot />
-    <style lang='css'>
+    <style lang="css">
       [astro-icon] {
         height: 1rem;
         width: 1rem;

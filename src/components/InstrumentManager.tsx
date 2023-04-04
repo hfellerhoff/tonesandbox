@@ -7,7 +7,8 @@ import {
   gainAtom,
 } from "@shared/instruments";
 import { isToneStartedStore } from "@shared/isToneStartedStore";
-import { For, createEffect } from "solid-js";
+import { For, Show, createEffect, createSignal } from "solid-js";
+import { CgPiano } from "solid-icons/cg";
 
 export function InstrumentManagerContent() {
   const isToneStarted = useStore(isToneStartedStore);
@@ -62,9 +63,29 @@ export function InstrumentManagerContent() {
 }
 
 export default function FloatingInstrumentManager() {
+  const [isExpanded, setIsExpanded] = createSignal(false);
+
   return (
-    <div class="absolute bg-white py-2 rounded shadow bottom-4 left-4 px-3">
-      <InstrumentManagerContent />
-    </div>
+    <Show
+      when={isExpanded()}
+      fallback={
+        <button
+          class="p-4 absolute bg-white rounded shadow bottom-4 left-4"
+          onClick={() => setIsExpanded(true)}
+        >
+          <CgPiano />
+        </button>
+      }
+    >
+      <div class="flex flex-col gap-2 absolute bg-white py-4 px-4 rounded shadow bottom-4 left-4 w-56 z-20">
+        <InstrumentManagerContent />
+        <button
+          class="py-1 px-2 bg-gray-100 rounded"
+          onClick={() => setIsExpanded(false)}
+        >
+          Close
+        </button>
+      </div>
+    </Show>
   );
 }

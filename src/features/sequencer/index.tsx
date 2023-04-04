@@ -3,8 +3,9 @@ import { useStore } from "@nanostores/solid";
 import copyToClipboard from "@shared/utils/copyToClipboard";
 import clsx from "clsx";
 import { BiRegularDotsHorizontal } from "solid-icons/bi";
+import { IoCheckmark, IoLink, IoPause, IoPlay, IoTrash } from "solid-icons/io";
 import { OcHorizontalrule3 } from "solid-icons/oc";
-import { For, createEffect, createMemo, createSignal } from "solid-js";
+import { For, createMemo, createSignal } from "solid-js";
 import Button from "./Button";
 import PlaybackAndLengthFloatingConfig from "./PlaybackAndLengthFloatingConfig";
 import ScaleSelection, {
@@ -19,13 +20,13 @@ import SequencerTile from "./SequencerTile";
 import {
   PlaybackLocation,
   SUBDIVISION_OFFSET,
-  subtractFromPlaybackLocation,
   decrementPlaybackLocation,
   incrementPlaybackLocation,
   isLocationBefore,
   onTogglePlayback,
   playbackLocation,
   playbackLoop,
+  subtractFromPlaybackLocation,
 } from "./playback";
 import {
   TileState,
@@ -61,6 +62,8 @@ function SequencerScreen() {
   const scale = useStore(scaleAtom);
   const rootNote = useStore(rootNoteAtom);
   const showNonDiatonicNotes = useStore(showNonDiatonicNotesAtom);
+
+  const [isRecentlyCopied, setIsRecentlyCopied] = createSignal(false);
 
   const [mouseDownMode, setMouseDownMode] = createSignal<"single" | "combined">(
     "single"
@@ -312,7 +315,7 @@ function SequencerScreen() {
 
   return (
     <>
-      <div class="max-h-screen max-w-[100vw] overflow-auto py-56 box-border">
+      <div class="h-screen w-screen overflow-auto py-56 box-border">
         <div class="flex flex-col">
           <For each={notesArray()}>
             {(note) => (
@@ -325,7 +328,7 @@ function SequencerScreen() {
                 )}
               >
                 <div class="mr-1 min-w-[3rem] absolute left-4">
-                  <div class="text-gray-500 text-xs font-bold pointer-events-none">
+                  <div class="text-gray-500 text-xs font-bold pointer-events-none select-none">
                     {note.label}
                   </div>
                 </div>
@@ -413,7 +416,7 @@ function SequencerScreen() {
           </For>
         </div>
       </div>
-      <div class="flex flex-col gap-4 items-center justify-center absolute inset-x-8 bottom-8 pointer-events-none">
+      <div class="flex flex-col sm:flex-row gap-0 sm:gap-12 items-center justify-center absolute inset-x-8 bottom-8 pointer-events-none">
         <div class="flex gap-2 pointer-events-auto">
           <button
             onClick={() => setMouseDownMode("single")}
@@ -441,11 +444,30 @@ function SequencerScreen() {
           </button>
         </div>
         <div class="flex gap-2 pointer-events-auto">
-          <Button onClick={onTogglePlayback}>
-            {playbackLoop() ? "Stop" : "Start"}
-          </Button>
-          <Button onClick={() => setSelectedTiles(new Map())}>Clear</Button>
-          <Button onClick={copyStateUrl}>Copy URL</Button>
+          <button
+            onClick={onTogglePlayback}
+            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
+          >
+            {playbackLoop() ? <IoPause /> : <IoPlay />}
+          </button>
+          <button
+            onClick={() => setSelectedTiles(new Map())}
+            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
+          >
+            <IoTrash />
+          </button>
+          <button
+            onClick={() => {
+              copyStateUrl();
+              setIsRecentlyCopied(true);
+              setTimeout(() => {
+                setIsRecentlyCopied(false);
+              }, 3000);
+            }}
+            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
+          >
+            {isRecentlyCopied() ? <IoCheckmark /> : <IoLink />}
+          </button>
         </div>
       </div>
       <PlaybackAndLengthFloatingConfig />

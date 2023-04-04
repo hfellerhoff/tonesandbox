@@ -10,6 +10,13 @@ type InstrumentAPI = Tone.PolySynth | Tone.Sampler;
 
 const POLYPHONIC_SYNTH_KEY = "_";
 
+const isVoiceSynth = (
+  voice: AllowedToneInstruments,
+  instrumentTemplate: InstrumentTemplate
+): voice is Tone.Synth => {
+  return instrumentTemplate.type === "single";
+};
+
 export interface Instrument {
   slug: string;
   name: string;
@@ -55,6 +62,7 @@ const getOrCreateVoice = (
     voice = instrumentTemplate.create();
     voices.set(note, voice);
   }
+
   return voice;
 };
 
@@ -99,11 +107,19 @@ export const setSelectedInstrument = action(
         if (Array.isArray(notes)) {
           notes.forEach((note) => {
             const voice = getOrCreateVoice(voices, note, instrumentTemplate);
-            voice.triggerRelease(note, time);
+            if (isVoiceSynth(voice, instrumentTemplate)) {
+              voice.triggerRelease(time);
+            } else {
+              voice.triggerRelease(note, time);
+            }
           });
         } else {
           const voice = getOrCreateVoice(voices, notes, instrumentTemplate);
-          voice.triggerAttack(notes, time);
+          if (isVoiceSynth(voice, instrumentTemplate)) {
+            voice.triggerRelease(time);
+          } else {
+            voice.triggerRelease(notes, time);
+          }
         }
       },
       triggerAttackRelease: (
@@ -135,10 +151,10 @@ export const setSelectedInstrument = action(
       },
       releaseAll: (time = undefined) => {
         voices.forEach((voice) => {
-          if ("releaseAll" in voice) {
-            voice.releaseAll(time);
-          } else {
+          if (isVoiceSynth(voice, instrumentTemplate)) {
             voice.triggerRelease(time);
+          } else {
+            voice.releaseAll(time);
           }
         });
       },

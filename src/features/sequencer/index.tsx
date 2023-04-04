@@ -315,7 +315,7 @@ function SequencerScreen() {
 
   return (
     <>
-      <div class="h-screen max-w-screen overflow-auto py-56 box-border">
+      <div class="h-screen max-w-[100vw] overflow-auto py-56 box-border">
         <div class="flex flex-col">
           <For each={notesArray()}>
             {(note) => (

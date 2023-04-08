@@ -1,4 +1,3 @@
-import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 import type {
   Frequency,
@@ -6,6 +5,7 @@ import type {
   Time,
 } from "tone/build/esm/core/type/Units";
 import { createVelocitySampler } from "../utils/createVelocitySampler";
+import type { InputNode, Sampler, SamplerOptions } from "tone";
 
 const velocities = new Array<number>(16).fill(1).map((v, i) => v + i);
 const velocityToSamplerIndexMap = new Map<number, number>();
@@ -19,15 +19,23 @@ velocities.forEach((velocity) => {
   }
 });
 
-export class VelocityPiano extends Tone.Sampler {
-  private samplers: Tone.Sampler[] = [];
+class VelocityPiano {
+  private samplers: Sampler[] = [];
 
   samplerCount = velocities.length;
   samplersLoaded = 0;
 
-  constructor() {
-    super();
+  volume = {
+    _value: 0,
+    set(value: number) {
+      this._value = value;
+    },
+    get() {
+      return this._value;
+    },
+  };
 
+  constructor() {
     velocities.map((velocity) => {
       const sampler = createVelocitySampler(velocity, () => {
         this.samplersLoaded++;
@@ -49,7 +57,7 @@ export class VelocityPiano extends Tone.Sampler {
     return this.samplers[samplerIndex];
   }
 
-  override triggerAttack(
+  triggerAttack(
     notes: Frequency | Frequency[],
     time: Time,
     velocity: NormalRange
@@ -63,7 +71,7 @@ export class VelocityPiano extends Tone.Sampler {
     return this;
   }
 
-  override triggerRelease(notes: Frequency | Frequency[], time: Time): this {
+  triggerRelease(notes: Frequency | Frequency[], time: Time): this {
     this.samplers.forEach((sampler) => {
       sampler.triggerRelease(notes, time);
     });
@@ -71,7 +79,30 @@ export class VelocityPiano extends Tone.Sampler {
     return this;
   }
 
-  override toDestination(): this {
+  triggerAttackRelease(
+    notes: Frequency | Frequency[],
+    duration: Time | Time[],
+    time: Time,
+    velocity: NormalRange
+  ): this {
+    const sampler = this.getSampler(velocity * 127);
+
+    if (sampler) {
+      sampler.triggerAttackRelease(notes, duration, time, velocity);
+    }
+
+    return this;
+  }
+
+  releaseAll(time?: Time): this {
+    this.samplers.forEach((sampler) => {
+      sampler.releaseAll(time);
+    });
+
+    return this;
+  }
+
+  toDestination(): this {
     this.samplers.forEach((sampler) => {
       sampler.toDestination();
     });
@@ -79,11 +110,7 @@ export class VelocityPiano extends Tone.Sampler {
     return this;
   }
 
-  override connect(
-    destination: Tone.InputNode,
-    outputNum?: number,
-    inputNum?: number
-  ): this {
+  connect(destination: InputNode, outputNum?: number, inputNum?: number): this {
     this.samplers.forEach((sampler) => {
       sampler.connect(destination, outputNum, inputNum);
     });
@@ -91,8 +118,8 @@ export class VelocityPiano extends Tone.Sampler {
     return this;
   }
 
-  override disconnect(
-    destination?: Tone.InputNode,
+  disconnect(
+    destination?: InputNode,
     outputNum?: number,
     inputNum?: number
   ): this {
@@ -104,7 +131,7 @@ export class VelocityPiano extends Tone.Sampler {
   }
 }
 
-type PianoTemplate = InstrumentTemplate<Tone.SamplerOptions>;
+type PianoTemplate = InstrumentTemplate<SamplerOptions>;
 
 const defaultConfig: PianoTemplate["config"] = {};
 

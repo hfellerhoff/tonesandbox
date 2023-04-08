@@ -32,7 +32,7 @@ const useHandlePlayback = () => {
 
     if (!$selectedInstrument) {
       setGain(1);
-      setSelectedInstrument("velocity-piano");
+      setSelectedInstrument("piano");
     }
   }, [$instruments, $selectedInstrument]);
 

@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 
-type SoftTemplate = InstrumentTemplate<Tone.Synth, Tone.SynthOptions>;
+type SoftTemplate = InstrumentTemplate<Tone.SynthOptions>;
 
 const defaultConfig: SoftTemplate["config"] = {
   oscillator: {
@@ -18,7 +18,7 @@ const defaultConfig: SoftTemplate["config"] = {
 export const SOFT_SYNTH: SoftTemplate = {
   slug: "soft-synth",
   name: "Soft Synth",
-  type: "single",
+  type: "monophonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },
   create: function () {

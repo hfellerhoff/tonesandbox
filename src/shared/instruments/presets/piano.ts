@@ -1,8 +1,8 @@
-import * as Tone from "tone";
-import { createSampler } from "../createSampler";
+import type { SamplerOptions } from "tone";
 import type { InstrumentTemplate } from "../types";
+import { createVelocitySampler } from "../utils/createVelocitySampler";
 
-type PianoTemplate = InstrumentTemplate<Tone.Sampler, Tone.SamplerOptions>;
+type PianoTemplate = InstrumentTemplate<SamplerOptions>;
 
 // TODO: Get piano config working
 const defaultConfig: PianoTemplate["config"] = {
@@ -13,26 +13,8 @@ const defaultConfig: PianoTemplate["config"] = {
 export const PIANO: PianoTemplate = {
   name: "Piano",
   slug: "piano",
-  type: "poly",
+  type: "polyphonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },
-  create: () =>
-    new Tone.Sampler({
-      ...createSampler({
-        startOctave: 1,
-        endOctave: 7,
-        baseUrl: "/assets/instruments/piano/",
-        notes: [
-          {
-            label: "C",
-            slug: "C",
-          },
-          {
-            label: "F#",
-            slug: "Fs",
-          },
-        ],
-      }),
-      release: 1,
-    }),
+  create: () => createVelocitySampler(8),
 };

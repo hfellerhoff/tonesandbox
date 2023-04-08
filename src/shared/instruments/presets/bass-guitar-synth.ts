@@ -1,10 +1,7 @@
 import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 
-type BassGuitarTemplate = InstrumentTemplate<
-  Tone.MonoSynth,
-  Tone.MonoSynthOptions
->;
+type BassGuitarTemplate = InstrumentTemplate<Tone.MonoSynthOptions>;
 
 // http://tonejs.github.io/Presets/
 const defaultConfig: BassGuitarTemplate["config"] = {
@@ -38,7 +35,7 @@ const defaultConfig: BassGuitarTemplate["config"] = {
 export const BASS_GUITAR_SYNTH: BassGuitarTemplate = {
   slug: "bass-guitar-synth",
   name: "Bass Guitar Synth",
-  type: "single",
+  type: "monophonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },
   create: function () {

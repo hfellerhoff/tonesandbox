@@ -122,8 +122,6 @@ function RenderConfigNode(props: {
 
     if (!rootInstrument) return;
 
-    console.log(rootInstrument.config);
-
     if (!props.parentName) {
       rootInstrument.config[props.name] = newValue;
     } else {
@@ -246,7 +244,7 @@ export default function FloatingInstrumentManager() {
             Reset to Defaults
           </button>
         </Show>
-        <Show when={selectedInstrumentSlug() !== "piano"}>
+        <Show when={!selectedInstrumentSlug().includes("piano")}>
           <button
             class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
             onClick={() => setIsCustomizing(!isCustomizing())}

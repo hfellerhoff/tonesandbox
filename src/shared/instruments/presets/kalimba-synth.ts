@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 
-type KalimbaTemplate = InstrumentTemplate<Tone.FMSynth, Tone.FMSynthOptions>;
+type KalimbaTemplate = InstrumentTemplate<Tone.FMSynthOptions>;
 
 // http://tonejs.github.io/Presets/
 const defaultConfig: KalimbaTemplate["config"] = {
@@ -30,7 +30,7 @@ const defaultConfig: KalimbaTemplate["config"] = {
 export const KALIMBA_SYNTH: KalimbaTemplate = {
   slug: "kalimba-synth",
   name: "Kalimba Synth",
-  type: "single",
+  type: "monophonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },
   create: function () {

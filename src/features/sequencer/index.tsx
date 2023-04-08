@@ -65,9 +65,9 @@ function SequencerScreen() {
 
   const [isRecentlyCopied, setIsRecentlyCopied] = createSignal(false);
 
-  const [mouseDownMode, setMouseDownMode] = createSignal<"single" | "combined">(
-    "single"
-  );
+  const [mouseDownMode, setMouseDownMode] = createSignal<
+    "monophonic" | "combined"
+  >("monophonic");
 
   const measuresArray = createMemo(() =>
     Array.from({ length: sequencerMeasures() })
@@ -211,7 +211,7 @@ function SequencerScreen() {
 
         if (!canChange) return;
 
-        if (mouseDownMode() === "single") {
+        if (mouseDownMode() === "monophonic") {
           const targetState = isSelected ? TileState.None : TileState.Single;
           selectedTiles().set(tileKey, targetState);
           setSelectedTiles(new Map(selectedTiles()));
@@ -298,7 +298,7 @@ function SequencerScreen() {
       if (isSelected) {
         selectedTiles().set(tileKey, TileState.None);
       } else {
-        if (mouseDownMode() === "single") {
+        if (mouseDownMode() === "monophonic") {
           selectedTiles().set(tileKey, TileState.Single);
         }
         if (mouseDownMode() === "combined") {
@@ -423,12 +423,12 @@ function SequencerScreen() {
       <div class="flex flex-col sm:flex-row gap-0 sm:gap-12 items-center justify-center absolute inset-x-8 bottom-4 sm:bottom-8 pointer-events-none">
         <div class="flex gap-2 pointer-events-auto">
           <button
-            onClick={() => setMouseDownMode("single")}
+            onClick={() => setMouseDownMode("monophonic")}
             class={clsx(
               "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 transition-colors",
               {
-                "border-purple-600": mouseDownMode() === "single",
-                "border-transparent": mouseDownMode() !== "single",
+                "border-purple-600": mouseDownMode() === "monophonic",
+                "border-transparent": mouseDownMode() !== "monophonic",
               }
             )}
           >

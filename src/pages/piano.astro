@@ -5,6 +5,7 @@ import ExternalMIDIManager from "../components/ExternalMIDIManager";
 import FloatingContainer from "@components/FloatingContainer.astro";
 import { InstrumentManagerContent } from "@components/InstrumentManager";
 import ToneFeatureWrapper from "@components/ToneFeatureWrapper";
+import LoadingOverlay from "@components/LoadingOverlay";
 ---
 
 <Layout title="Piano - Tone Sandbox">
@@ -15,6 +16,7 @@ import ToneFeatureWrapper from "@components/ToneFeatureWrapper";
     <InstrumentManagerContent client:load />
   </FloatingContainer>
   <main class="flex flex-col items-center justify-center h-screen w-full">
+    <LoadingOverlay client:load />
     <ToneFeatureWrapper client:load>
       <Piano client:visible />
     </ToneFeatureWrapper>

@@ -10,7 +10,8 @@ import type {
 } from "./types";
 import { KALIMBA_SYNTH } from "./presets/kalimba-synth";
 import { BASS_GUITAR_SYNTH } from "./presets/bass-guitar-synth";
-import { CUSTOM_SYNTH } from "./presets/custom-synth";
+import { VELOCITY_PIANO } from "./presets/velocity-piano";
+import { setLoadingPercent } from "@shared/isLoadingStore";
 
 type InstrumentAPI = Tone.PolySynth | Tone.Sampler;
 
@@ -20,7 +21,7 @@ const isVoiceMonophonic = (
   voice: AllowedToneInstrument,
   instrumentTemplate: InstrumentTemplate
 ): voice is AllowedToneMonoInstrument => {
-  return instrumentTemplate.type === "single";
+  return instrumentTemplate.type === "monophonic";
 };
 
 export interface Instrument {
@@ -52,6 +53,7 @@ export const instrumentsAtom = atom<InstrumentTemplate[]>([
   KALIMBA_SYNTH,
   BASS_GUITAR_SYNTH,
   PIANO,
+  VELOCITY_PIANO,
 ]);
 
 export const selectedInstrumentAtom = atom<Instrument | null>(null);
@@ -61,7 +63,7 @@ const getOrCreateVoice = (
   note: Tone.Unit.Frequency,
   instrumentTemplate: InstrumentTemplate
 ) => {
-  if (instrumentTemplate.type === "poly") {
+  if (instrumentTemplate.type === "polyphonic") {
     return voices.get(POLYPHONIC_SYNTH_KEY)!;
   }
 
@@ -107,7 +109,7 @@ export const updateSelectedInstrumentConfig = action(
     previousInstrument.voices.clear();
     previousInstrument.toDestination();
 
-    if (previousInstrument.template.type === "poly") {
+    if (previousInstrument.template.type === "polyphonic") {
       previousInstrument.voices.set(
         POLYPHONIC_SYNTH_KEY,
         previousInstrument.template.create()
@@ -135,8 +137,23 @@ export const setSelectedInstrument = action(
 
     const voices = new Map<Tone.Unit.Frequency, AllowedToneInstrument>();
 
-    if (instrumentTemplate.type === "poly") {
-      voices.set(POLYPHONIC_SYNTH_KEY, instrumentTemplate.create());
+    if (instrumentTemplate.type === "polyphonic") {
+      const voice = instrumentTemplate.create();
+      voices.set(POLYPHONIC_SYNTH_KEY, voice);
+      if (!!voice?.getLoadingPercent) {
+        setLoadingPercent(0);
+      }
+
+      const interval = setInterval(() => {
+        if (!voice?.getLoadingPercent) return;
+
+        const percent = voice.getLoadingPercent();
+        setLoadingPercent(percent);
+
+        if (percent === 100) {
+          clearInterval(interval);
+        }
+      }, 100);
     }
 
     const newInstrument: Instrument = {
@@ -183,7 +200,7 @@ export const setSelectedInstrument = action(
         if (Array.isArray(notes)) {
           notes.forEach((note) => {
             const voice = getOrCreateVoice(voices, note, instrumentTemplate);
-            console.log(voice);
+
             if (!Array.isArray(duration)) {
               voice.triggerAttackRelease(note, duration, time, velocity);
             } else {

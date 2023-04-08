@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 
-type SawtoothTemplate = InstrumentTemplate<Tone.FMSynth, Tone.FMSynthOptions>;
+type SawtoothTemplate = InstrumentTemplate<Tone.FMSynthOptions>;
 
 const defaultConfig: SawtoothTemplate["config"] = {
   oscillator: {
@@ -18,7 +18,7 @@ const defaultConfig: SawtoothTemplate["config"] = {
 export const SAWTOOTH_SYNTH: SawtoothTemplate = {
   slug: "sawtooth-synth",
   name: "Sawtooth Synth",
-  type: "single",
+  type: "monophonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },
   create: function () {

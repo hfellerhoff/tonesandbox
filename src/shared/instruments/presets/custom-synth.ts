@@ -1,14 +1,14 @@
 import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 
-type CustomTemplate = InstrumentTemplate<Tone.Synth, Tone.SynthOptions>;
+type CustomTemplate = InstrumentTemplate<Tone.SynthOptions>;
 
 const defaultConfig: CustomTemplate["config"] = {};
 
 export const CUSTOM_SYNTH: CustomTemplate = {
   slug: "custom-synth",
   name: "Custom Synth",
-  type: "single",
+  type: "monophonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },
   create: function () {

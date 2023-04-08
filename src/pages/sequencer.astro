@@ -1,10 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Sequencer from "../features/sequencer";
+import LoadingOverlay from "@components/LoadingOverlay";
 ---
 
 <Layout title="Sequencer - Tone Sandbox">
   <main class="flex flex-col items-center justify-center h-screen w-full">
+    <LoadingOverlay client:load />
     <Sequencer client:visible />
   </main>
 </Layout>

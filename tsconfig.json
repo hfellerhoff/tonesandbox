@@ -3,18 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@layouts/*": [
-        "src/layouts/*"
-      ],
-      "@features/*": [
-        "src/features/*"
-      ],
-      "@shared/*": [
-        "src/shared/*"
-      ]
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@features/*": ["src/features/*"],
+      "@shared/*": ["src/shared/*"],
+      "@modules/*": ["src/modules/*"]
     },
     "jsx": "preserve",
     "jsxImportSource": "solid-js"

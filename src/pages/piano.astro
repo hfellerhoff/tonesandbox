@@ -1,24 +1,31 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Piano from "../features/piano";
-import ExternalMIDIManager from "../components/ExternalMIDIManager";
-import FloatingContainer from "@components/FloatingContainer.astro";
-import { InstrumentManagerContent } from "@components/InstrumentManager";
-import ToneFeatureWrapper from "@components/ToneFeatureWrapper";
+import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
 import LoadingOverlay from "@components/LoadingOverlay";
+import InstrumentModule from "@modules/instruments/InstrumentModule";
+import MIDIDeviceModule from "@modules/midi";
+import Piano from "../features/piano";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Piano - Tone Sandbox">
-  <FloatingContainer position="top-right">
-    <ExternalMIDIManager client:load />
-  </FloatingContainer>
-  <FloatingContainer position="bottom-right">
-    <InstrumentManagerContent client:load />
-  </FloatingContainer>
   <main class="flex flex-col items-center justify-center h-screen w-full">
     <LoadingOverlay client:load />
-    <ToneFeatureWrapper client:load>
-      <Piano client:visible />
-    </ToneFeatureWrapper>
+    <AudioFeatureWrapper client:load>
+      <MIDIDeviceModule client:load position={"top-right"} />
+      <InstrumentModule
+        client:load
+        defaultInstrument={"piano"}
+        presetInstruments={[
+          "piano",
+          "velocity-piano",
+          "soft-synth",
+          "kalimba-synth",
+          "sawtooth-synth",
+          "bass-guitar-synth",
+        ]}
+        position={"bottom-right"}
+      />
+      <Piano client:load />
+    </AudioFeatureWrapper>
   </main>
 </Layout>

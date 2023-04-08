@@ -12,8 +12,8 @@ import {
   instrumentsAtom,
   selectedInstrumentAtom,
   setGain,
-} from "@shared/instruments";
-import { setSelectedInstrument } from "@shared/instruments";
+} from "@modules/instruments";
+import { setSelectedInstrument } from "@modules/instruments";
 
 const useHandlePlayback = () => {
   const $midiMessages = useStore(midiMessagesStore);

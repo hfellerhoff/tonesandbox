@@ -1,17 +1,31 @@
 import { useStore } from "@nanostores/solid";
 import {
+  INSTRUMENT_PRESETS,
+  InstrumentSlug,
   gainAtom,
   instrumentsAtom,
   resetInstrumentConfig,
   selectedInstrumentAtom,
   selectedInstrumentSlugAtom,
+  setInstruments,
   setSelectedInstrument,
   updateSelectedInstrumentConfig,
-} from "@shared/instruments";
+} from "@modules/instruments";
 import { isToneStartedStore } from "@shared/isToneStartedStore";
 import { CgPiano } from "solid-icons/cg";
 import { VsArrowLeft, VsSettings } from "solid-icons/vs";
-import { For, Match, Show, Switch, createSignal } from "solid-js";
+import {
+  For,
+  Match,
+  Show,
+  Switch,
+  createEffect,
+  createMemo,
+  createSignal,
+  onMount,
+} from "solid-js";
+import FloatingModuleWrapper from "../FloatingModuleWrapper";
+import type { BaseModule } from "@modules/index";
 
 export function InstrumentManagerContent() {
   const isToneStarted = useStore(isToneStartedStore);
@@ -190,83 +204,77 @@ function RenderConfigNode(props: {
   );
 }
 
-export default function FloatingInstrumentManager() {
-  const [isExpanded, setIsExpanded] = createSignal(window.innerWidth >= 1000);
-  const [isCustomizing, setIsCustomizing] = createSignal(false);
+export interface InstrumentAudioModule extends BaseModule {
+  defaultInstrument: InstrumentSlug;
+  presetInstruments: InstrumentSlug[];
+}
+
+export default function InstrumentModule(props: InstrumentAudioModule) {
+  onMount(() => {
+    setInstruments(props.presetInstruments);
+    setSelectedInstrument(props.defaultInstrument);
+  });
 
   const selectedInstrument = useStore(selectedInstrumentAtom);
   const selectedInstrumentSlug = useStore(selectedInstrumentSlugAtom);
 
+  const [isCustomizing, setIsCustomizing] = createSignal(false);
+
+  const canCustomize = createMemo(() => {
+    return !selectedInstrumentSlug().includes("piano");
+  });
+
   return (
-    <Show
-      when={isExpanded()}
-      fallback={
-        <button
-          class="p-4 absolute bg-white rounded shadow bottom-4 left-4"
-          onClick={() => setIsExpanded(true)}
-        >
-          <CgPiano />
-        </button>
-      }
-    >
-      <div class="flex flex-col gap-2 absolute bg-white py-4 px-4 rounded shadow bottom-4 left-4 w-80 z-20 max-h-[90vh] overflow-y-auto">
-        <Show when={!isCustomizing()}>
-          <InstrumentManagerContent />
-        </Show>
-        <Show when={isCustomizing() && selectedInstrument()?.template.config}>
-          <div class="flex flex-col gap-2">
-            <div class="bg-yellow-50 p-2 rounded text-yellow-800 text-sm">
-              <p class="font-bold">
-                Customizing instruments is a work in progress.
-              </p>
-              <p class="mt-1">
-                If something goes wrong, use the Copy Link button at the bottom
-                of the screen to save your progress, then reload using that
-                link.
-              </p>
-            </div>
-            {Object.entries(selectedInstrument()?.template.config).map(
-              (config) => {
-                return (
-                  <RenderConfigNode
-                    parentName=""
-                    name={config[0]}
-                    value={config[1]}
-                  />
-                );
-              }
-            )}
+    <FloatingModuleWrapper icon={<CgPiano />} position={props.position}>
+      <Show when={!isCustomizing()}>
+        <InstrumentManagerContent />
+      </Show>
+      <Show when={isCustomizing() && selectedInstrument()?.template.config}>
+        <div class="flex flex-col gap-2">
+          <div class="bg-yellow-50 p-2 rounded text-yellow-800 text-sm">
+            <p class="font-bold">
+              Customizing instruments is a work in progress.
+            </p>
+            <p class="mt-1">
+              If something goes wrong, use the Copy Link button at the bottom of
+              the screen to save your progress, then reload using that link.
+            </p>
           </div>
-          <button
-            class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
-            onClick={() => resetInstrumentConfig()}
-          >
-            Reset to Defaults
-          </button>
-        </Show>
-        <Show when={!selectedInstrumentSlug().includes("piano")}>
-          <button
-            class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
-            onClick={() => setIsCustomizing(!isCustomizing())}
-          >
-            {isCustomizing() ? (
-              <>
-                <VsArrowLeft /> Back
-              </>
-            ) : (
-              <>
-                <VsSettings /> Customize
-              </>
-            )}
-          </button>
-        </Show>
+          {Object.entries(selectedInstrument()?.template.config).map(
+            (config) => {
+              return (
+                <RenderConfigNode
+                  parentName=""
+                  name={config[0]}
+                  value={config[1]}
+                />
+              );
+            }
+          )}
+        </div>
         <button
-          class="py-1 px-2 bg-gray-100 rounded"
-          onClick={() => setIsExpanded(false)}
+          class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
+          onClick={() => resetInstrumentConfig()}
         >
-          Close
+          Reset to Defaults
         </button>
-      </div>
-    </Show>
+      </Show>
+      <Show when={canCustomize()}>
+        <button
+          class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
+          onClick={() => setIsCustomizing(!isCustomizing())}
+        >
+          {isCustomizing() ? (
+            <>
+              <VsArrowLeft /> Back
+            </>
+          ) : (
+            <>
+              <VsSettings /> Customize
+            </>
+          )}
+        </button>
+      </Show>
+    </FloatingModuleWrapper>
   );
 }

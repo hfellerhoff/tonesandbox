@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import { Note } from "theory.js";
-import { selectedInstrumentAtom } from "@shared/instruments";
+import { selectedInstrumentAtom } from "@modules/instruments";
 import { createSignal } from "solid-js";
 import {
   TileState,

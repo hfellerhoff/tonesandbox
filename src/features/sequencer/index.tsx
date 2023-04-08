@@ -1,11 +1,11 @@
-import InstrumentManager from "@components/InstrumentManager";
+import InstrumentManager from "@modules/instruments/InstrumentModule";
 import { useStore } from "@nanostores/solid";
 import copyToClipboard from "@shared/utils/copyToClipboard";
 import clsx from "clsx";
 import { BiRegularDotsHorizontal } from "solid-icons/bi";
 import { IoCheckmark, IoLink, IoPause, IoPlay, IoTrash } from "solid-icons/io";
 import { OcHorizontalrule3 } from "solid-icons/oc";
-import { For, createMemo, createSignal } from "solid-js";
+import { For, createEffect, createMemo, createSignal, onMount } from "solid-js";
 import PlaybackAndLengthFloatingConfig from "./PlaybackAndLengthFloatingConfig";
 import ScaleSelection, {
   ALL_NOTES,
@@ -13,7 +13,6 @@ import ScaleSelection, {
   scaleAtom,
   showNonDiatonicNotesAtom,
 } from "./ScaleSelection";
-import SequencerWrapper from "./SequencerStartScreen";
 import type { SequencerNote } from "./SequencerTile";
 import SequencerTile from "./SequencerTile";
 import {
@@ -25,6 +24,7 @@ import {
   onTogglePlayback,
   playbackLocation,
   playbackLoop,
+  setBpm,
   subtractFromPlaybackLocation,
 } from "./playback";
 import {
@@ -40,8 +40,15 @@ import {
   setSelectedTiles,
   zoom,
   type TileKey,
+  setBaseOctave,
+  setOctaves,
+  setSequencerBeats,
+  setSequencerMeasures,
+  setSequencerSubdivisions,
 } from "./state";
-import { encodeSequencerToUrl } from "./urlUtils";
+import { decodeUrlToSequencerState, encodeSequencerToUrl } from "./urlUtils";
+import { setGain, setSelectedInstrument } from "@modules/instruments";
+import { isToneStartedStore } from "@shared/isToneStartedStore";
 
 // Single note
 export const [mouseInteractionIntent, setMouseInteractionIntent] = createSignal<
@@ -58,7 +65,40 @@ export const [tentativeCombinedStartNote, setTentativeCombinedStartNote] =
 export const [tentativeCombinedEndNote, setTentativeCombinedEndNote] =
   createSignal<TentativeCombinedNote | null>(null);
 
-function SequencerScreen() {
+export default function Sequencer() {
+  onMount(() => {
+    const state = decodeUrlToSequencerState(window.location.href);
+    if (state.bpm) setBpm(state.bpm);
+    if (state.measures) setSequencerMeasures(state.measures);
+    if (state.beats) setSequencerBeats(state.beats);
+    if (state.subdivisions) setSequencerSubdivisions(state.subdivisions);
+    if (state.octaves) setOctaves(state.octaves);
+    if (state.baseOctave) setBaseOctave(state.baseOctave);
+    if (state.rootNote) rootNoteAtom.set(state.rootNote);
+    if (state.scale) scaleAtom.set(state.scale);
+    if (state.showNonDiatonicNotes)
+      showNonDiatonicNotesAtom.set(state.showNonDiatonicNotes);
+    if (state.tiles) setSelectedTiles(state.tiles);
+
+    setGain(0.8);
+
+    addEventListener("mousedown", () => setIsMouseDown(true));
+    addEventListener("mouseup", () => {
+      setIsMouseDown(false);
+
+      if (mouseDownMode() === "combined") {
+        tentativeCombinedNotes().forEach((tileKey) => {
+          selectedTiles().set(tileKey, TileState.Combined);
+        });
+
+        setSelectedTiles(new Map(selectedTiles()));
+      }
+
+      setTentativeCombinedStartNote(null);
+      setTentativeCombinedEndNote(null);
+    });
+  });
+
   const scale = useStore(scaleAtom);
   const rootNote = useStore(rootNoteAtom);
   const showNonDiatonicNotes = useStore(showNonDiatonicNotesAtom);
@@ -181,22 +221,6 @@ function SequencerScreen() {
     tentativeTileKeys.push(finalTileKey);
 
     return tentativeTileKeys;
-  });
-
-  addEventListener("mousedown", () => setIsMouseDown(true));
-  addEventListener("mouseup", () => {
-    setIsMouseDown(false);
-
-    if (mouseDownMode() === "combined") {
-      tentativeCombinedNotes().forEach((tileKey) => {
-        selectedTiles().set(tileKey, TileState.Combined);
-      });
-
-      setSelectedTiles(new Map(selectedTiles()));
-    }
-
-    setTentativeCombinedStartNote(null);
-    setTentativeCombinedEndNote(null);
   });
 
   const handleOnMouseEnterOrLeaveTile =
@@ -475,16 +499,7 @@ function SequencerScreen() {
         </div>
       </div>
       <PlaybackAndLengthFloatingConfig />
-      <InstrumentManager />
       <ScaleSelection />
     </>
-  );
-}
-
-export default function Sequencer() {
-  return (
-    <SequencerWrapper>
-      <SequencerScreen />
-    </SequencerWrapper>
   );
 }

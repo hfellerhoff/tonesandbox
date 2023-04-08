@@ -13,6 +13,16 @@ import { BASS_GUITAR_SYNTH } from "./presets/bass-guitar-synth";
 import { VELOCITY_PIANO } from "./presets/velocity-piano";
 import { setLoadingPercent } from "@shared/isLoadingStore";
 
+export const INSTRUMENT_PRESETS = [
+  SOFT_SYNTH,
+  SAWTOOTH_SYNTH,
+  KALIMBA_SYNTH,
+  BASS_GUITAR_SYNTH,
+  PIANO,
+  VELOCITY_PIANO,
+] as const;
+export type InstrumentSlug = (typeof INSTRUMENT_PRESETS)[number]["slug"];
+
 type InstrumentAPI = Tone.PolySynth | Tone.Sampler;
 
 const POLYPHONIC_SYNTH_KEY = "_";
@@ -47,15 +57,17 @@ export interface Instrument {
   toDestination: (...args: Parameters<InstrumentAPI["toDestination"]>) => void;
 }
 
-export const instrumentsAtom = atom<InstrumentTemplate[]>([
-  SOFT_SYNTH,
-  SAWTOOTH_SYNTH,
-  KALIMBA_SYNTH,
-  BASS_GUITAR_SYNTH,
-  PIANO,
-  VELOCITY_PIANO,
-]);
-
+export const instrumentsAtom = atom<InstrumentTemplate[]>([]);
+export const setInstruments = action(
+  instrumentsAtom,
+  "setInstruments",
+  (previousInstrumentsAtom, instruments: InstrumentSlug[]) => {
+    const instrumentTemplates = INSTRUMENT_PRESETS.filter((instrument) =>
+      instruments.includes(instrument.slug)
+    );
+    previousInstrumentsAtom.set(instrumentTemplates);
+  }
+);
 export const selectedInstrumentAtom = atom<Instrument | null>(null);
 
 const getOrCreateVoice = (

@@ -2,11 +2,27 @@
 import Layout from "../layouts/Layout.astro";
 import Sequencer from "../features/sequencer";
 import LoadingOverlay from "@components/LoadingOverlay";
+import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
+import InstrumentModule from "@modules/instruments/InstrumentModule";
 ---
 
 <Layout title="Sequencer - Tone Sandbox">
   <main class="flex flex-col items-center justify-center h-screen w-full">
     <LoadingOverlay client:load />
-    <Sequencer client:visible />
+    <AudioFeatureWrapper client:load>
+      <InstrumentModule
+        client:load
+        defaultInstrument={"soft-synth"}
+        presetInstruments={[
+          "soft-synth",
+          "kalimba-synth",
+          "sawtooth-synth",
+          "bass-guitar-synth",
+          "piano",
+        ]}
+        position={"bottom-left"}
+      />
+      <Sequencer client:load />
+    </AudioFeatureWrapper>
   </main>
 </Layout>

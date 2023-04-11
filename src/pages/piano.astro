@@ -7,7 +7,10 @@ import Piano from "../features/piano";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Piano - Tone Sandbox">
+<Layout
+  title="Piano"
+  description="Playable either through clicking or with a MIDI controller, this piano features note highlighting for held notes and a variety of different customizable instrument sounds to choose from."
+>
   <main class="flex flex-col items-center justify-center h-screen w-full">
     <LoadingOverlay client:load />
     <AudioFeatureWrapper client:load>

@@ -1,11 +1,15 @@
 ---
 import { Icon } from "astro-icon";
+import { SEO } from "astro-seo";
 
 export interface Props {
-  title: string;
+  title?: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const { title, description } = Astro.props;
+const DEFAULT_TITLE =
+  "Tone Sandbox - A collection of musical tools and experiments.";
 ---
 
 <!DOCTYPE html>
@@ -16,7 +20,30 @@ const { title } = Astro.props;
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <SEO
+      title={title}
+      titleTemplate={"%s | Tone Sandbox"}
+      titleDefault={DEFAULT_TITLE}
+      description={description}
+      openGraph={{
+        basic: {
+          title: title ? `${title} on Tone Sandbox` : DEFAULT_TITLE,
+          type: "website",
+          image: "/assets/og/og-image-256.png",
+        },
+        optional: {
+          siteName: "Tone Sandbox",
+        },
+        image: {
+          height: 620,
+          width: 1200,
+          alt: "The Tone Sandbox title accompanied by the site logo, which is a shovel partially sticking out of a square.",
+        },
+      }}
+      twitter={{
+        creator: "@henryfellerhoff",
+      }}
+    />
     {
       import.meta.env.PROD && (
         <script

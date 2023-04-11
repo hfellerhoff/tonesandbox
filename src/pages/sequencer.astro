@@ -6,7 +6,10 @@ import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
 import InstrumentModule from "@modules/instruments/InstrumentModule";
 ---
 
-<Layout title="Sequencer - Tone Sandbox">
+<Layout
+  title="Music Sequencer"
+  description="Features customizable measure/beat/subdivision lengths, a collection of customizeable playback instruments, and the ability to share compositions with friends."
+>
   <main class="flex flex-col items-center justify-center h-screen w-full">
     <LoadingOverlay client:load />
     <AudioFeatureWrapper client:load>

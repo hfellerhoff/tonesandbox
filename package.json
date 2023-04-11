@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/preact": "^2.1.0",
+    "@astrojs/sitemap": "^1.2.2",
     "@astrojs/solid-js": "^2.1.0",
     "@astrojs/svelte": "^2.1.0",
     "@astrojs/tailwind": "^3.1.1",

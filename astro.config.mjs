@@ -5,9 +5,19 @@ import preact from "@astrojs/preact";
 import svelte from "@astrojs/svelte";
 import AstroPWA from "@vite-pwa/astro";
 
+import sitemap from "@astrojs/sitemap";
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [AstroPWA(), tailwind(), solidJs(), preact(), svelte()],
+  site: "https://www.tonesandbox.com",
+  integrations: [
+    AstroPWA(),
+    tailwind(),
+    solidJs(),
+    preact(),
+    svelte(),
+    sitemap(),
+  ],
   vite: {
     ssr: {
       external: ["svgo"],

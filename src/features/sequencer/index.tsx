@@ -291,26 +291,6 @@ export default function Sequencer() {
       }
     };
 
-  const handleOnMouseUpTile = (
-    endNote: string,
-    endMeasure: number,
-    endBeat: number,
-    endSubdivision: number
-  ) => {
-    const mouseStartNote = tentativeCombinedStartNote();
-    if (!mouseStartNote) return;
-
-    const {
-      location: [startMeasure, startBeat, startSubdivision],
-      note: startNote,
-    } = mouseStartNote;
-
-    if (startNote !== endNote) return;
-
-    const direction = startMeasure < endMeasure ? 1 : -1;
-    if (direction < 0) return;
-  };
-
   const handleOnClickTile =
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {

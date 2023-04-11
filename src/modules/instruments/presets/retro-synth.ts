@@ -1,9 +1,9 @@
 import * as Tone from "tone";
 import type { InstrumentTemplate } from "../types";
 
-type SoftTemplate = InstrumentTemplate<Tone.SynthOptions>;
+type RetroTemplate = InstrumentTemplate<Tone.SynthOptions>;
 
-const defaultConfig: SoftTemplate["config"] = {
+const defaultConfig: RetroTemplate["config"] = {
   oscillator: {
     type: "sine",
   },
@@ -15,9 +15,9 @@ const defaultConfig: SoftTemplate["config"] = {
   },
 };
 
-export const SOFT_SYNTH: SoftTemplate = {
-  slug: "soft-synth",
-  name: "Soft Synth",
+export const RETRO_SYNTH: RetroTemplate = {
+  slug: "retro-synth",
+  name: "Retro Synth",
   type: "monophonic",
   defaultConfig: { ...defaultConfig },
   config: { ...defaultConfig },

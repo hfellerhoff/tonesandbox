@@ -2,7 +2,7 @@ import { action, atom, computed } from "nanostores";
 import * as Tone from "tone";
 import { PIANO } from "./presets/piano";
 import { SAWTOOTH_SYNTH } from "./presets/sawtooth-synth";
-import { SOFT_SYNTH } from "./presets/soft-synth";
+import { RETRO_SYNTH } from "./presets/retro-synth";
 import type {
   AllowedToneInstrument,
   AllowedToneMonoInstrument,
@@ -14,12 +14,12 @@ import { VELOCITY_PIANO } from "./presets/velocity-piano";
 import { setLoadingPercent } from "@shared/isLoadingStore";
 
 export const INSTRUMENT_PRESETS = [
-  SOFT_SYNTH,
-  SAWTOOTH_SYNTH,
   KALIMBA_SYNTH,
+  RETRO_SYNTH,
+  SAWTOOTH_SYNTH,
   BASS_GUITAR_SYNTH,
-  PIANO,
   VELOCITY_PIANO,
+  PIANO,
 ] as const;
 export type InstrumentSlug = (typeof INSTRUMENT_PRESETS)[number]["slug"];
 

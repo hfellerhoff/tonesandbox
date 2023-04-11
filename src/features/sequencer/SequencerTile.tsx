@@ -1,7 +1,6 @@
 import clsx from "clsx";
-import { Accessor, createEffect, createMemo } from "solid-js";
-import { type TileKey, selectedTiles, TileState } from "./state";
-import { playbackLocation } from "./playback";
+import { createEffect, createMemo, onMount } from "solid-js";
+import { TileState, type TileKey } from "./state";
 
 type MouseEventInteractionHandler = (
   note: string,
@@ -53,8 +52,8 @@ export default function SequencerTile(props: SequencerTileProps) {
     props.beat === 0 && props.subdivision === 0 && props.measure !== 0;
 
   return (
-    <input
-      type="checkbox"
+    <button
+      id={tileKey}
       class={clsx("w-8 h-8 appearance-none rounded-sm", {
         "bg-white":
           props.note.isDiatonic &&
@@ -67,8 +66,7 @@ export default function SequencerTile(props: SequencerTileProps) {
 
         "bg-gray-400": !isStateNone() && !props.isTentativeCombinedNote,
 
-        "bg-opacity-75": !props.isCurrentLocation,
-        "bg-opacity-100": props.isCurrentLocation,
+        "bg-opacity-80": isStateNone() && !props.isCurrentLocation,
 
         "rounded-r-none": connectToNextNote(),
         "rounded-l-none": connectToPreviousNote(),
@@ -83,7 +81,6 @@ export default function SequencerTile(props: SequencerTileProps) {
 
         "bg-gray-300": props.isTentativeCombinedNote,
       })}
-      checked={!isStateNone()}
       onMouseEnter={props.onMouseEnterTile(
         props.note.note,
         props.measure,

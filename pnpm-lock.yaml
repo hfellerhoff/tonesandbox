@@ -19,6 +19,9 @@ dependencies:
   '@nanostores/solid':
     specifier: ^0.3.2
     version: 0.3.2(nanostores@0.7.4)(solid-js@1.7.0)
+  animejs:
+    specifier: ^3.2.1
+    version: 3.2.1
   astro:
     specifier: ^2.1.9
     version: 2.1.9
@@ -57,6 +60,9 @@ dependencies:
     version: 14.7.77
 
 devDependencies:
+  '@types/animejs':
+    specifier: ^3.1.7
+    version: 3.1.7
   '@types/react':
     specifier: ^18.0.31
     version: 18.0.31
@@ -1798,6 +1804,10 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: false
 
+  /@types/animejs@3.1.7:
+    resolution: {integrity: sha512-kFSyjM+fLo3oE9noWEtUvF82ttN8fTrKohiEMIrSzEzEjnsCmtO0rBCUQBlSPEb2w8vfN+v4/Zo0tK21Bgmq4g==}
+    dev: true
+
   /@types/babel__core@7.20.0:
     resolution: {integrity: sha512-+n8dL/9GWblDO0iU6eZAwEIJVr5DWigtle+Q6HLOrh/pdbXOhOtqzq8VPPE2zvNJzSKY4vH/z3iT3tn0A3ypiQ==}
     dependencies:
@@ -1942,6 +1952,10 @@ packages:
       require-from-string: 2.0.2
       uri-js: 4.4.1
     dev: true
+
+  /animejs@3.2.1:
+    resolution: {integrity: sha512-sWno3ugFryK5nhiDm/2BKeFCpZv7vzerWUcUPyAZLDhMek3+S/p418ldZJbJXo5ZUOpfm2kP2XRO4NJcULMy9A==}
+    dev: false
 
   /ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}

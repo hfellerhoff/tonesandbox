@@ -3,12 +3,29 @@ import { Note } from "theory.js";
 import { selectedInstrumentAtom } from "@modules/instruments";
 import { createSignal } from "solid-js";
 import {
+  TileKey,
   TileState,
   selectedTiles,
   sequencerBeats,
   sequencerMeasures,
   sequencerSubdivisions,
 } from "./state";
+import anime from "animejs";
+
+const startAnimation = {
+  keyframes: [{ scale: 1.01, translateY: -3, translateX: -3, duration: 300 }],
+} satisfies anime.AnimeParams;
+
+const stopAnimation = {
+  keyframes: [{ scale: 1, translateY: 0, translateX: 0, duration: 100 }],
+} satisfies anime.AnimeParams;
+
+const startStopAnimation: anime.AnimeParams = {
+  keyframes: [
+    { scale: 1.01, translateY: -3, translateX: -3, duration: 100 },
+    { scale: 1, translateY: 0, translateX: 0, duration: 100 },
+  ],
+};
 
 export const [velocity, setVelocity] = createSignal(0.5);
 
@@ -22,7 +39,7 @@ export const [playbackLocation, setPlaybackLocation] =
 export const setLocationToStopped = () => setPlaybackLocation([-1, -1, -1]);
 export const setLocationToBeginning = () => setPlaybackLocation([0, 0, 0]);
 
-export const SUBDIVISION_OFFSET = 4;
+export const SUBDIVISION_OFFSET = 1;
 export const subtractFromPlaybackLocation = (
   location: PlaybackLocation,
   subdivisions: number
@@ -89,6 +106,16 @@ export const stopPlaybackLoop = () => {
   if (instrument) {
     instrument.releaseAll(Tone.now());
   }
+
+  const delay = Tone.Time(`0:0:${SUBDIVISION_OFFSET}`).toSeconds();
+  setTimeout(() => {
+    selectedTiles().forEach((_, key) => {
+      anime({
+        targets: `#${key}`,
+        ...stopAnimation,
+      });
+    });
+  }, delay * 1000);
 };
 
 export const incrementPlaybackLocation = ([
@@ -226,24 +253,78 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
     )
     .map(({ note }) => note);
 
-  const toneTime =
-    Tone.now() + Tone.Time(`0:0:${SUBDIVISION_OFFSET}`).toSeconds();
+  const delay = Tone.Time(`0:0:${SUBDIVISION_OFFSET}`).toSeconds();
+  const toneTime = Tone.now() + delay;
 
   instrument.triggerRelease(endedSelectedCombinedNotes, toneTime);
+  endedSelectedCombinedNotes.forEach((note) => {
+    const tileIds: string[] = [];
+    let previousPostion = decrementPlaybackLocation(location);
+    let previousTileKey: TileKey = `${note}-${previousPostion[0]}-${previousPostion[1]}-${previousPostion[2]}`;
+    let previousSelectedTile = selectedTiles().get(previousTileKey);
+    while (previousSelectedTile === TileState.Combined) {
+      tileIds.push(`#${previousTileKey}`);
+      previousPostion = decrementPlaybackLocation(previousPostion);
+      previousTileKey = `${note}-${previousPostion[0]}-${previousPostion[1]}-${previousPostion[2]}`;
+      previousSelectedTile = selectedTiles().get(previousTileKey);
+    }
+
+    if (tileIds.length <= 1) return;
+
+    anime({
+      ...stopAnimation,
+      targets: tileIds,
+      delay: delay * 1000,
+    });
+  });
 
   const noteLengthSeconds = 60 / sequencerSubdivisions() / bpm();
 
-  currentSelectedSingleNotes.forEach((note) => {
+  const playedSingleNoteIds = currentSelectedSingleNotes.map((note) => {
     instrument.triggerAttackRelease(
       note,
       noteLengthSeconds,
       toneTime,
       getVelocity(note)
     );
+    return `#${note}-${currentMeasure}-${currentBeat}-${currentSubdivision}`;
+  });
+  anime({
+    ...startStopAnimation,
+    targets: playedSingleNoteIds,
+    delay: delay * 1000,
   });
 
   newlySelectedCombinedNotes.forEach((note) => {
     instrument.triggerAttack(note, toneTime, getVelocity(note));
+
+    const startDelay = delay * 1000;
+    const tileIds: string[] = [];
+
+    let nextPostion = location;
+    let nextTileKey: TileKey = `${note}-${currentMeasure}-${currentBeat}-${currentSubdivision}`;
+    let nextSelectedTile = selectedTiles().get(nextTileKey);
+    while (nextSelectedTile === TileState.Combined) {
+      tileIds.push(`#${nextTileKey}`);
+      nextPostion = incrementPlaybackLocation(nextPostion);
+      nextTileKey = `${note}-${nextPostion[0]}-${nextPostion[1]}-${nextPostion[2]}`;
+      nextSelectedTile = selectedTiles().get(nextTileKey);
+    }
+
+    if (tileIds.length <= 1) {
+      anime({
+        ...startStopAnimation,
+        targets: tileIds,
+        delay: startDelay,
+      });
+      return;
+    }
+
+    anime({
+      ...startAnimation,
+      targets: tileIds,
+      delay: startDelay,
+    });
   });
 };
 

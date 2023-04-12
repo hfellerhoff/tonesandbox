@@ -1,8 +1,9 @@
-import { useStore } from "@nanostores/solid";
+import Button from "@components/Button";
+import Input from "@components/Input";
+import Select from "@components/Select";
+import type { BaseModule } from "@modules/index";
 import {
-  INSTRUMENT_PRESETS,
   InstrumentSlug,
-  gainAtom,
   instrumentsAtom,
   resetInstrumentConfig,
   selectedInstrumentAtom,
@@ -11,6 +12,7 @@ import {
   setSelectedInstrument,
   updateSelectedInstrumentConfig,
 } from "@modules/instruments";
+import { useStore } from "@nanostores/solid";
 import { isToneStartedStore } from "@shared/isToneStartedStore";
 import { CgPiano } from "solid-icons/cg";
 import { VsArrowLeft, VsSettings } from "solid-icons/vs";
@@ -19,31 +21,16 @@ import {
   Match,
   Show,
   Switch,
-  createEffect,
   createMemo,
   createSignal,
   onMount,
 } from "solid-js";
 import FloatingModuleWrapper from "../FloatingModuleWrapper";
-import type { BaseModule } from "@modules/index";
-import Input from "@components/Input";
-import Select from "@components/Select";
-import Button from "@components/Button";
 
-export interface InstrumentAudioModule extends BaseModule {
-  defaultInstrument: InstrumentSlug;
-  presetInstruments: InstrumentSlug[];
-}
-
-export function InstrumentManagerContent(props: InstrumentAudioModule) {
+export function InstrumentManagerContent() {
   const isToneStarted = useStore(isToneStartedStore);
   const instruments = useStore(instrumentsAtom);
   const selectedInstrumentSlug = useStore(selectedInstrumentSlugAtom);
-
-  onMount(() => {
-    setInstruments(props.presetInstruments);
-    setSelectedInstrument(props.defaultInstrument);
-  });
 
   const onSelectInstrument = (event: Event) => {
     const instrumentSlug = (event.target as HTMLSelectElement).value;
@@ -55,15 +42,15 @@ export function InstrumentManagerContent(props: InstrumentAudioModule) {
       <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">
         Instrument
       </label>
-      <Select
-        value={selectedInstrumentSlug}
-        onChange={onSelectInstrument}
-        disabled={!isToneStarted()}
-      >
+      <Select onChange={onSelectInstrument} disabled={!isToneStarted()}>
         <option value="">None</option>
         <For each={instruments()}>
           {(instrument) => (
-            <option id={instrument.slug} value={instrument.slug}>
+            <option
+              id={instrument.slug}
+              value={instrument.slug}
+              selected={selectedInstrumentSlug() === instrument.slug}
+            >
               {instrument.name}
             </option>
           )}
@@ -194,11 +181,21 @@ function RenderConfigNode(props: {
   );
 }
 
+export interface InstrumentAudioModule extends BaseModule {
+  defaultInstrument: InstrumentSlug;
+  presetInstruments: InstrumentSlug[];
+}
+
 export default function InstrumentModule(props: InstrumentAudioModule) {
   const selectedInstrument = useStore(selectedInstrumentAtom);
   const selectedInstrumentSlug = useStore(selectedInstrumentSlugAtom);
 
   const [isCustomizing, setIsCustomizing] = createSignal(false);
+
+  onMount(() => {
+    setInstruments(props.presetInstruments);
+    setSelectedInstrument(props.defaultInstrument);
+  });
 
   const canCustomize = createMemo(() => {
     return !selectedInstrumentSlug().includes("piano");
@@ -207,7 +204,7 @@ export default function InstrumentModule(props: InstrumentAudioModule) {
   return (
     <FloatingModuleWrapper icon={<CgPiano />} position={props.position}>
       <Show when={!isCustomizing()}>
-        <InstrumentManagerContent {...props} />
+        <InstrumentManagerContent />
       </Show>
       <Show when={isCustomizing() && selectedInstrument()?.template.config}>
         <div class="flex flex-col gap-2">

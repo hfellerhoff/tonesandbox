@@ -336,7 +336,7 @@ export default function Sequencer() {
                 })}
               >
                 <div class="mr-1 min-w-[3rem] absolute -left-14 text-right">
-                  <div class="text-gray-500 text-xs font-bold pointer-events-none select-none">
+                  <div class="text-gray-400 dark:text-gray-500 text-xs font-bold pointer-events-none select-none">
                     {note.label}
                   </div>
                 </div>
@@ -429,7 +429,7 @@ export default function Sequencer() {
           <button
             onClick={() => setMouseDownMode("monophonic")}
             class={clsx(
-              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 transition-colors",
+              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow border-2 transition-colors",
               {
                 "border-purple-600": mouseDownMode() === "monophonic",
                 "border-transparent": mouseDownMode() !== "monophonic",
@@ -441,7 +441,7 @@ export default function Sequencer() {
           <button
             onClick={() => setMouseDownMode("combined")}
             class={clsx(
-              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 transition-colors",
+              "grid place-items-center h-12 w-12 shadow-md rounded-full bg-white dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow border-2 transition-colors",
               {
                 "border-purple-600": mouseDownMode() === "combined",
                 "border-transparent": mouseDownMode() !== "combined",
@@ -454,13 +454,13 @@ export default function Sequencer() {
         <div class="flex gap-2 pointer-events-auto">
           <button
             onClick={onTogglePlayback}
-            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
+            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
           >
             {playbackLoop() ? <IoPause /> : <IoPlay />}
           </button>
           <button
             onClick={() => setSelectedTiles(new Map())}
-            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
+            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
           >
             <IoTrash />
           </button>
@@ -472,7 +472,7 @@ export default function Sequencer() {
                 setIsRecentlyCopied(false);
               }, 3000);
             }}
-            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
+            class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
           >
             {isRecentlyCopied() ? <IoCheckmark /> : <IoLink />}
           </button>

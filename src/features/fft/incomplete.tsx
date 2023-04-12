@@ -1,8 +1,8 @@
-import { h, Fragment } from 'preact';
-import { useStore } from '@nanostores/preact';
-import { microphoneStore } from '@shared/microphoneStore';
-import { useEffect, useRef, useState } from 'preact/hooks';
-import * as Tone from 'tone';
+import { h, Fragment } from "preact";
+import { useStore } from "@nanostores/preact";
+import { microphoneStore } from "@shared/microphoneStore";
+import { useEffect, useRef, useState } from "preact/hooks";
+import * as Tone from "tone";
 
 export default function FFT() {
   const $microphone = useStore(microphoneStore);
@@ -34,10 +34,10 @@ export default function FFT() {
       canvas.height = height;
     }
 
-    window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener("resize", onWindowResize, false);
 
     return () => {
-      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener("resize", onWindowResize);
     };
   }, [canvasRef?.current]);
 
@@ -78,7 +78,7 @@ export default function FFT() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const width = canvas.width;
@@ -93,6 +93,6 @@ export default function FFT() {
   };
 
   return (
-    <canvas ref={canvasRef} className='bg-gray-900 h-full w-full'></canvas>
+    <canvas ref={canvasRef} className="bg-gray-900 h-full w-full"></canvas>
   );
 }

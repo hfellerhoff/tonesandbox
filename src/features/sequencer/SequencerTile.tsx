@@ -55,18 +55,20 @@ export default function SequencerTile(props: SequencerTileProps) {
     <button
       id={tileKey}
       class={clsx("w-8 h-8 appearance-none rounded-sm", {
-        "bg-white":
+        "bg-white dark:bg-gray-700":
           props.note.isDiatonic &&
           isStateNone() &&
           !props.isTentativeCombinedNote,
-        "bg-gray-100":
+        "bg-gray-100 dark:bg-gray-800":
           !props.note.isDiatonic &&
           isStateNone() &&
           !props.isTentativeCombinedNote,
 
-        "bg-gray-400": !isStateNone() && !props.isTentativeCombinedNote,
+        "bg-gray-400 dark:bg-gray-200":
+          !isStateNone() && !props.isTentativeCombinedNote,
 
-        "bg-opacity-80": isStateNone() && !props.isCurrentLocation,
+        "bg-opacity-80 dark:bg-opacity-80":
+          isStateNone() && !props.isCurrentLocation,
 
         "rounded-r-none": connectToNextNote(),
         "rounded-l-none": connectToPreviousNote(),

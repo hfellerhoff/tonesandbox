@@ -273,9 +273,9 @@
 <canvas id="fft" class="bg-gray-900 overflow-hidden" />
 
 <div
-  class="bg-white absolute left-4 bottom-4 rounded shadow text-gray-900 grid grid-cols-2 place-items-center p-4 gap-2"
+  class="bg-white dark:bg-gray-800 absolute left-4 bottom-4 rounded shadow text-gray-900 dark:text-gray-2 grid grid-cols-2 place-items-center p-4 gap-2"
 >
-  <label for="fft-playback">Playback</label>
+  <label for="fft-playback" class="dark:text-gray-200">Playback</label>
   <button id="fft-playback" on:click={toggleActive}>
     {#if isActive}
       Stop
@@ -283,14 +283,14 @@
       Start
     {/if}
   </button>
-  <label for="fft-samplesize">Sample Size</label>
+  <label for="fft-samplesize" class="dark:text-gray-200">Sample Size</label>
   <select id="fft-samplesize" bind:value={fftSize} on:change={updateFFTSize}>
     {#each sampleCounts as count}
       <option value={count}>{count}</option>
     {/each}
   </select>
-  <label for="fft-displayscale">Display Scale</label>
-  <select id="fft-displayscale" bind:value={displayScale}>
+  <label for="fft-displayscale" class="dark:text-gray-200">Display Scale</label>
+  <select id="fft-displayscale" bind:value={displayScale} >
     {#each displayScales as scale}
       <option value={scale}
         >{scale.substring(0, 1).toUpperCase() + scale.substring(1)}</option
@@ -327,7 +327,12 @@
 
   button,
   select {
-    @apply bg-gray-200 rounded w-32 h-8 border-none text-inherit;
+    @apply bg-gray-200 rounded w-32 h-8 border-none text-inherit p-1;
+  }
+
+  :global(.dark) button,
+  :global(.dark) select {
+    @apply bg-gray-700 text-gray-200;
   }
 
   #markers {
@@ -342,6 +347,7 @@
     text-align: right;
     font-size: 10px;
     font-family: monospace;
+    user-select: none;
   }
 
   #markers span {

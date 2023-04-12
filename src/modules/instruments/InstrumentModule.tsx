@@ -26,13 +26,24 @@ import {
 } from "solid-js";
 import FloatingModuleWrapper from "../FloatingModuleWrapper";
 import type { BaseModule } from "@modules/index";
+import Input from "@components/Input";
+import Select from "@components/Select";
+import Button from "@components/Button";
 
-export function InstrumentManagerContent() {
+export interface InstrumentAudioModule extends BaseModule {
+  defaultInstrument: InstrumentSlug;
+  presetInstruments: InstrumentSlug[];
+}
+
+export function InstrumentManagerContent(props: InstrumentAudioModule) {
   const isToneStarted = useStore(isToneStartedStore);
   const instruments = useStore(instrumentsAtom);
   const selectedInstrumentSlug = useStore(selectedInstrumentSlugAtom);
 
-  const gain = useStore(gainAtom);
+  onMount(() => {
+    setInstruments(props.presetInstruments);
+    setSelectedInstrument(props.defaultInstrument);
+  });
 
   const onSelectInstrument = (event: Event) => {
     const instrumentSlug = (event.target as HTMLSelectElement).value;
@@ -41,10 +52,10 @@ export function InstrumentManagerContent() {
 
   return (
     <>
-      <label class="block text-sm font-medium text-gray-500 px-1">
+      <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">
         Instrument
       </label>
-      <select
+      <Select
         value={selectedInstrumentSlug()}
         onChange={onSelectInstrument}
         disabled={!isToneStarted()}
@@ -57,24 +68,7 @@ export function InstrumentManagerContent() {
             </option>
           )}
         </For>
-      </select>
-      {/* <label
-        class="block text-sm font-medium text-gray-500 px-1 mt-2"
-        for="gain"
-      >
-        Gain
-      </label>
-      <input
-        id="gain"
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={gain()}
-        onChange={(event) => {
-          setGain(parseFloat((event.target as HTMLInputElement).value));
-        }}
-      /> */}
+      </Select>
     </>
   );
 }
@@ -108,7 +102,7 @@ function RenderConfigNode(props: {
   if (typeof props.value === "object") {
     return (
       <div class="mb-2">
-        <label class="block text-sm font-bold text-gray-600 capitalize mb-2">
+        <label class="block text-sm font-bold text-gray-600 dark:text-gray-300 capitalize mb-2">
           {props.name}
         </label>
         <div class="flex flex-col gap-2">
@@ -149,15 +143,14 @@ function RenderConfigNode(props: {
 
   return (
     <div class="flex items-center justify-between max-w-sm">
-      <label class="block text-sm font-medium text-gray-400 capitalize w-[12rem] truncate">
+      <label class="block text-sm font-medium text-gray-400 dark:text-gray-500 capitalize w-[12rem] truncate">
         {props.name}
       </label>
       <div class="w-[8rem]">
         <Switch>
           <Match when={typeof props.value === "number"}>
-            <input
+            <Input
               type="number"
-              class="w-full py-1 px-2 bg-gray-100 rounded box-border"
               value={props.value}
               step={0.1}
               onBlur={(event) => {
@@ -166,8 +159,7 @@ function RenderConfigNode(props: {
             />
           </Match>
           <Match when={typeof props.value === "string" && !!options}>
-            <select
-              class="w-full py-1 px-2 bg-gray-100 rounded box-border"
+            <Select
               value={props.value}
               onChange={(event) => {
                 setConfig((event.target as HTMLSelectElement).value);
@@ -176,12 +168,11 @@ function RenderConfigNode(props: {
               <For each={options}>
                 {(option) => <option value={option}>{option}</option>}
               </For>
-            </select>
+            </Select>
           </Match>
           <Match when={typeof props.value === "string"}>
-            <input
+            <Input
               type="text"
-              class="w-full py-1 px-2 bg-gray-100 rounded box-border"
               value={props.value}
               onBlur={(event) => {
                 setConfig((event.target as HTMLInputElement).value);
@@ -189,9 +180,8 @@ function RenderConfigNode(props: {
             />
           </Match>
           <Match when={typeof props.value === "boolean"}>
-            <input
+            <Input
               type="checkbox"
-              class="w-full py-1 px-2 bg-gray-100 rounded box-border"
               checked={props.value}
               onChange={(event) => {
                 setConfig((event.target as HTMLInputElement).checked);
@@ -204,17 +194,7 @@ function RenderConfigNode(props: {
   );
 }
 
-export interface InstrumentAudioModule extends BaseModule {
-  defaultInstrument: InstrumentSlug;
-  presetInstruments: InstrumentSlug[];
-}
-
 export default function InstrumentModule(props: InstrumentAudioModule) {
-  onMount(() => {
-    setInstruments(props.presetInstruments);
-    setSelectedInstrument(props.defaultInstrument);
-  });
-
   const selectedInstrument = useStore(selectedInstrumentAtom);
   const selectedInstrumentSlug = useStore(selectedInstrumentSlugAtom);
 
@@ -227,11 +207,11 @@ export default function InstrumentModule(props: InstrumentAudioModule) {
   return (
     <FloatingModuleWrapper icon={<CgPiano />} position={props.position}>
       <Show when={!isCustomizing()}>
-        <InstrumentManagerContent />
+        <InstrumentManagerContent {...props} />
       </Show>
       <Show when={isCustomizing() && selectedInstrument()?.template.config}>
         <div class="flex flex-col gap-2">
-          <div class="bg-yellow-50 p-2 rounded text-yellow-800 text-sm">
+          <div class="bg-yellow-50 dark:bg-yellow-900 dark:bg-opacity-25 p-2 rounded text-yellow-800 dark:text-yellow-200 text-sm">
             <p class="font-bold">
               Customizing instruments is a work in progress.
             </p>
@@ -252,18 +232,12 @@ export default function InstrumentModule(props: InstrumentAudioModule) {
             }
           )}
         </div>
-        <button
-          class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
-          onClick={() => resetInstrumentConfig()}
-        >
+        <Button onClick={() => resetInstrumentConfig()}>
           Reset to Defaults
-        </button>
+        </Button>
       </Show>
       <Show when={canCustomize()}>
-        <button
-          class="py-1 px-2 bg-gray-100 rounded flex items-center justify-center gap-2"
-          onClick={() => setIsCustomizing(!isCustomizing())}
-        >
+        <Button onClick={() => setIsCustomizing(!isCustomizing())}>
           {isCustomizing() ? (
             <>
               <VsArrowLeft /> Back
@@ -273,7 +247,7 @@ export default function InstrumentModule(props: InstrumentAudioModule) {
               <VsSettings /> Customize
             </>
           )}
-        </button>
+        </Button>
       </Show>
     </FloatingModuleWrapper>
   );

@@ -1,3 +1,4 @@
+import Select from "@components/Select";
 import FloatingModuleWrapper from "@modules/FloatingModuleWrapper";
 import { useStore } from "@nanostores/solid";
 import { atom } from "nanostores";
@@ -44,16 +45,11 @@ export default function ScaleSelection() {
     <FloatingModuleWrapper icon={<BsBarChartFill />} position="bottom-right">
       <label
         for="scale-select"
-        class="block text-sm font-medium text-gray-500 px-1"
+        class="block text-sm font-medium text-gray-500 dark:text-gray-400"
       >
         Scale
       </label>
-      <select
-        id="scale-select"
-        value={scaleValue()}
-        onChange={onChangeScale}
-        class="max-w-full box-border"
-      >
+      <Select id="scale-select" value={scaleValue()} onChange={onChangeScale}>
         {/* <!-- Diatonic Modes --> */}
         <option value="0,2,4,5,7,9,11">Ionian (Major)</option>
         <option value="0,2,3,5,7,9,10">Dorian</option>
@@ -96,28 +92,27 @@ export default function ScaleSelection() {
         <option value="0,1,2,3,5,6,7,8,9,11">
           Mode 7, Messiaen's Modes of Limited Transposition
         </option>
-      </select>
+      </Select>
       <div class="flex flex-col gap-1 mt-2">
         <label
           for="root-note-select"
-          class="text-sm font-medium text-gray-500 px-1"
+          class="block text-sm font-medium text-gray-500 dark:text-gray-400"
         >
           Root note
         </label>
-        <select
+        <Select
           id="root-note-select"
           value={rootNote()}
           onChange={(event) =>
             rootNoteAtom.set((event.target as HTMLSelectElement).value)
           }
-          class="max-w-full"
         >
           <For each={ALL_NOTES}>
             {(note) => <option value={note}>{note}</option>}
           </For>
-        </select>
+        </Select>
       </div>
-      <div class="flex items-center gap-1 mt-2 px-1">
+      <div class="flex items-center gap-1 mt-2">
         <input
           id="show-non-diatonic"
           type="checkbox"
@@ -126,7 +121,7 @@ export default function ScaleSelection() {
         />
         <label
           for="show-non-diatonic"
-          class="text-sm font-medium text-gray-500"
+          class="block text-sm font-medium text-gray-500 dark:text-gray-400"
         >
           Show all notes
         </label>

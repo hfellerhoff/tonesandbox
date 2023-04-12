@@ -2,6 +2,7 @@ import { JSX, onMount } from "solid-js";
 import { ParentProps, Show, createSignal } from "solid-js";
 import clsx from "clsx";
 import type { BaseModule } from ".";
+import Button from "@components/Button";
 
 type FloatingModuleWrapperProps = {
   position: BaseModule["position"];
@@ -27,12 +28,15 @@ export default function FloatingModuleWrapper(
       when={isExpanded()}
       fallback={
         <button
-          class={clsx("p-4 absolute bg-white rounded shadow grid", {
-            "bottom-4 left-4": props.position === "bottom-left",
-            "bottom-4 right-4": props.position === "bottom-right",
-            "top-4 left-4": props.position === "top-left",
-            "top-4 right-4": props.position === "top-right",
-          })}
+          class={clsx(
+            "p-4 absolute bg-white dark:bg-gray-800 dark:text-white rounded shadow grid z-10",
+            {
+              "bottom-4 left-4": props.position === "bottom-left",
+              "bottom-4 right-4": props.position === "bottom-right",
+              "top-4 left-4": props.position === "top-left",
+              "top-4 right-4": props.position === "top-right",
+            }
+          )}
           onClick={() => setIsExpanded(true)}
         >
           {props.icon}
@@ -41,7 +45,7 @@ export default function FloatingModuleWrapper(
     >
       <div
         class={clsx(
-          "flex flex-col gap-2 absolute bg-white py-4 px-4 rounded shadow w-80 z-20 max-h-[90vh] overflow-y-auto",
+          "flex flex-col gap-2 absolute bg-white dark:bg-gray-800 dark:text-white py-4 px-4 rounded shadow w-80 z-20 max-h-[90vh] overflow-y-auto",
           {
             "bottom-4 left-4": props.position === "bottom-left",
             "bottom-4 right-4": props.position === "bottom-right",
@@ -51,12 +55,7 @@ export default function FloatingModuleWrapper(
         )}
       >
         {props.children}
-        <button
-          class="py-1 px-2 bg-gray-100 rounded"
-          onClick={() => setIsExpanded(false)}
-        >
-          Close
-        </button>
+        <Button onClick={() => setIsExpanded(false)}>Close</Button>
       </div>
     </Show>
   );

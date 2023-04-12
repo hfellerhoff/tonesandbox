@@ -9,17 +9,16 @@ export default function AudioFeatureWrapper(props: ParentProps) {
 
   const onStart = async () => {
     await Tone.start();
-
     setToneIsReady();
   };
 
   return (
     <>
       <Show when={!isToneReady()}>
-        <div class="absolute inset-0 z-50 bg-gray-200 grid place-items-center">
+        <div class="absolute inset-0 z-50 bg-gray-200 dark:bg-gray-900 grid place-items-center">
           <button
             onClick={onStart}
-            class="p-8 shadow-lg rounded-full bg-gray-100 active:translate-y-0.5 active:shadow"
+            class="p-8 shadow-lg rounded-full bg-gray-100 dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow"
           >
             <FaSolidPlay size={24} />
           </button>

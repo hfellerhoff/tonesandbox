@@ -1,6 +1,5 @@
 import FloatingModuleWrapper from "@modules/FloatingModuleWrapper";
 import { VsSettings } from "solid-icons/vs";
-import Input from "./Input";
 import {
   bpm,
   refreshPlaybackLoop,
@@ -23,6 +22,7 @@ import {
   zoom,
 } from "./state";
 import type { Accessor, Setter } from "solid-js";
+import Input from "@components/Input";
 
 type ConfigureNumberInputProps = {
   id: string;
@@ -45,7 +45,10 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
 
   return (
     <div class="flex flex-row gap-2 items-center justify-between">
-      <label class="text-gray-500 text-sm" for={props.id}>
+      <label
+        class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+        for={props.id}
+      >
         {props.label}
       </label>
       <Input
@@ -54,7 +57,7 @@ function ConfigureNumberInput(props: ConfigureNumberInputProps) {
         value={props.value()}
         onBlur={onChange}
         onSubmit={onChange}
-        class="text-sm max-w-[6rem] text-right"
+        class="text-right max-w-[5rem]"
         min={props.min}
         max={props.max}
       />
@@ -118,8 +121,11 @@ export default function PlaybackAndLengthFloatingConfig() {
         onSetValue={refreshPlaybackLoop}
         min={1}
       />
-      <div class="flex flex-row gap-2 items-center justify-between">
-        <label class="text-gray-500 text-sm" for="velocity">
+      <div class="flex flex-row gap-2 items-center justify-between mt-2">
+        <label
+          class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+          for="velocity"
+        >
           Velocity
         </label>
         <input
@@ -135,8 +141,11 @@ export default function PlaybackAndLengthFloatingConfig() {
           }}
         />
       </div>
-      <div class="flex flex-row gap-2 items-center justify-between">
-        <label class="text-gray-500 text-sm" for="zoom">
+      <div class="flex flex-row gap-2 items-center justify-between mt-2">
+        <label
+          class="block text-sm font-medium text-gray-500 dark:text-gray-400"
+          for="zoom"
+        >
           Zoom
         </label>
         <input

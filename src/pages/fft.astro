@@ -1,20 +1,17 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import FFT from "@features/fft/index.svelte";
-import FloatingContainer from "@components/FloatingContainer.astro";
-import MicrophoneManager from "@components/MicrophoneManager";
+import MicrophoneModule from "@modules/microphone";
 ---
 
 <Layout
   title="Fast-Fourier Transform"
   description="A visualization of the Fast-Fourier Transform, which displays the sound from a microphone based on its frequencies."
 >
-  <FloatingContainer position="top-right">
-    <MicrophoneManager client:load />
-  </FloatingContainer>
   <main
     class="flex flex-col items-center justify-center h-screen w-full overflow-hidden"
   >
+    <MicrophoneModule position={"top-right"} client:load />
     <FFT client:load />
   </main>
 </Layout>

@@ -106,7 +106,7 @@ export default function MIDIDeviceModule(props: MIDIDeviceModuleProps) {
       position={props.position}
       shouldCollapse={true}
     >
-      <div class="flex items-center justify-between">
+      <div class="flex items-start justify-between text-sm">
         {status() === "connected" ? (
           <div>
             <p>{inputs()[0].name}</p>

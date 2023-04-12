@@ -1,49 +1,20 @@
-# Welcome to [Astro](https://astro.build)
+![Tone Sandbox logo](/public/assets/og/og-image-256.png)
+<div align="center"><strong>Tone Sandbox</strong></div>
+<div align="center">Browser-based musical tools and experiments</div>
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
+## What is Tone Sandbox?
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Tone Sandbox is a collection of open-source interesting, useful, or fun individual musical experiences. The site is designed to allow for anyone to contribute to an existing app or create the own, with goals to provide helpful pre-built functionality to help creative coders focus on what they want to build instead of wrestling with Web Audio APIs and other musical overhead.
 
-![basics](https://user-images.githubusercontent.com/4677417/186188965-73453154-fdec-4d6b-9c34-cb35c248ae5b.png)
+In addition, Tone Sandbox is built with [Astro](https://astro.build), a web framework that lets you build with whatever web technologies or framework you want. Pick from one of a number of [supported web frameworks](https://docs.astro.build/en/guides/integrations-guide/#official-integrations) to build what you want with what you're comfortable with.
 
+## What have you built so far?
 
-## 🚀 Project Structure
+- [Piano](www.tonesandbox.com/piano): Play the piano with either your mouse or a MIDI device. Choose from a variety of instruments, and customize them to suit your needs.
+- [Fast-Fourier Transform](www.tonesandbox.com/fft): Visualize the sound from your microphone in real-time. Adjust the sample size or adjust the display scale to better suit your needs.
+- [Sequencer](www.tonesandbox.com/sequencer): Make music with a customizable music sequencer and share it with your friends! Change measure/beat/subdivision lengths, choose your instrument, create short and held notes, and much more.
 
-Inside of your Astro project, you'll see the following folders and files:
+## What is pre-built to help me make music?
 
-```
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                             |
-| :--------------------- | :------------------------------------------------- |
-| `npm install`          | Installs dependencies                              |
-| `npm run dev`          | Starts local dev server at `localhost:3000`        |
-| `npm run build`        | Build your production site to `./dist/`            |
-| `npm run preview`      | Preview your build locally, before deploying       |
-| `npm run astro ...`    | Run CLI commands like `astro add`, `astro preview` |
-| `npm run astro --help` | Get help using the Astro CLI                       |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **Instruments**: pick from a variety of preset instruments, and customize their parameters to suit your needs.
+- **MIDI**: take in the MIDI input from a connected MIDI controller

@@ -1,12 +1,20 @@
 ---
-import { SEO } from "astro-seo";
 import NavigationCard from "../components/NavigationCard.astro";
 import Layout from "../layouts/Layout.astro";
+import { Icon } from "astro-icon";
 ---
 
 <Layout
   description="An open-source collection of different musical tools and experiments, serving as a place it try out new ideas and share useful and interesting ideas."
 >
+  <a
+    class="h-11 w-11 absolute top-4 right-4 z-10 bg-white dark:bg-gray-800 dark:text-white rounded shadow px-3 py-2 flex items-center justify-center gap-2 border-transparent hover:border-purple-600 border-2 transition-all"
+    href="https://github.com/hfellerhoff/tonesandbox"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Icon pack="lucide" name="github" class="" />
+  </a>
   <main class="pt-20 p-4 overflow-y-auto h-screen">
     <ul class="grid gap-4 grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
       <NavigationCard
@@ -25,7 +33,7 @@ import Layout from "../layouts/Layout.astro";
         title="Sequencer"
         body="Create MIDI progressions and looping melodies"
         href="/sequencer"
-        icon="piano-keys"
+        icon="music-notes"
       />
     </ul>
   </main>

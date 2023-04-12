@@ -1,11 +1,25 @@
-import { ParentProps, JSX, splitProps } from "solid-js";
+import { ParentProps, JSX, splitProps, Accessor, createMemo } from "solid-js";
 import classes, { type SelectProps } from "./classes";
 import { cx } from "class-variance-authority";
 
 export default function Select(
-  props: ParentProps<SelectProps & JSX.IntrinsicElements["select"]>
+  props: ParentProps<
+    SelectProps &
+      Omit<JSX.IntrinsicElements["select"], "value"> & {
+        value?: Accessor<string> | string;
+      }
+  >
 ) {
-  const [localProps, otherProps] = splitProps(props, ["class"]);
+  const [localProps, otherProps] = splitProps(props, ["class", "value"]);
+
+  const value = createMemo(() => {
+    if (typeof props.value === "string") {
+      return props.value;
+    } else if (typeof props.value === "function") {
+      return props.value();
+    }
+    return "";
+  });
 
   return (
     <select
@@ -15,6 +29,7 @@ export default function Select(
         }),
         localProps.class
       )}
+      value={value()}
       {...otherProps}
     >
       {props.children}

@@ -14,5 +14,5 @@ Tone Sandbox is a collection of open-source interesting, useful, or fun individu
 
 ## What is pre-built to help me make music?
 
-- Instruments: pick from a variety of preset instruments, and customize their parameters to suit your needs.
-- MIDI: take in the MIDI input from a connected MIDI controller
+- **Instruments**: pick from a variety of preset instruments, and customize their parameters to suit your needs.
+- **MIDI**: take in the MIDI input from a connected MIDI controller

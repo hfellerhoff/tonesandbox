@@ -6,7 +6,7 @@
 
 Tone Sandbox is a collection of open-source interesting, useful, or fun individual musical experiences. The site is designed to allow for anyone to contribute to an existing app or create the own, with goals to provide helpful pre-built functionality to help creative coders focus on what they want to build instead of wrestling with Web Audio APIs and other musical overhead.
 
-In addition, Tone Sandbox is built with [Astro](https://astro.build), a web framework that lets you build with whatever web technologies or framework you want. Pick from one of a number of [supported web frameworks] to build what you want with what you're comfortable with.
+In addition, Tone Sandbox is built with [Astro](https://astro.build), a web framework that lets you build with whatever web technologies or framework you want. Pick from one of a number of [supported web frameworks](https://docs.astro.build/en/guides/integrations-guide/#official-integrations) to build what you want with what you're comfortable with.
 
 ## What have you built so far?
 

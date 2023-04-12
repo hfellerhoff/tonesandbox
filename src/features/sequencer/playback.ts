@@ -5,6 +5,8 @@ import { createSignal } from "solid-js";
 import {
   TileKey,
   TileState,
+  getTileKey,
+  parseTileKey,
   selectedTiles,
   sequencerBeats,
   sequencerMeasures,
@@ -30,7 +32,7 @@ const startStopAnimation: anime.AnimeParams = {
 export const [velocity, setVelocity] = createSignal(0.5);
 
 export const [bpm, setBpm] = createSignal(120);
-export const [playbackLoop, setPlaybackLoop] = createSignal<number>(0);
+export const [playbackLoop, setPlaybackLoop] = createSignal<NodeJS.Timer>();
 
 export type PlaybackLocation = [number, number, number];
 export const [playbackLocation, setPlaybackLocation] =
@@ -101,7 +103,7 @@ export const isLocationAfter = (
 export const stopPlaybackLoop = () => {
   Tone.Transport.stop();
   clearInterval(playbackLoop());
-  setPlaybackLoop(0);
+  setPlaybackLoop(undefined);
   const instrument = selectedInstrumentAtom.get();
   if (instrument) {
     instrument.releaseAll(Tone.now());
@@ -189,16 +191,10 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
 
   const selectedNotes = Array.from(selectedTiles().entries())
     .filter(([_, state]) => !!state)
-    .map(([key, state]) => {
-      const [note, measure, beat, subdivision] = key.split("-");
-      return {
-        note,
-        measure: parseInt(measure),
-        beat: parseInt(beat),
-        subdivision: parseInt(subdivision),
-        state,
-      };
-    });
+    .map(([key, state]) => ({
+      ...parseTileKey(key),
+      state,
+    }));
 
   const currentSelectedNotes = selectedNotes.filter(
     ({ measure, beat, subdivision }) =>
@@ -260,12 +256,12 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
   endedSelectedCombinedNotes.forEach((note) => {
     const tileIds: string[] = [];
     let previousPostion = decrementPlaybackLocation(location);
-    let previousTileKey: TileKey = `${note}-${previousPostion[0]}-${previousPostion[1]}-${previousPostion[2]}`;
+    let previousTileKey: TileKey = getTileKey(note, ...previousPostion);
     let previousSelectedTile = selectedTiles().get(previousTileKey);
     while (previousSelectedTile === TileState.Combined) {
       tileIds.push(`#${previousTileKey}`);
       previousPostion = decrementPlaybackLocation(previousPostion);
-      previousTileKey = `${note}-${previousPostion[0]}-${previousPostion[1]}-${previousPostion[2]}`;
+      previousTileKey = getTileKey(note, ...previousPostion);
       previousSelectedTile = selectedTiles().get(previousTileKey);
     }
 
@@ -287,7 +283,12 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
       toneTime,
       getVelocity(note)
     );
-    return `#${note}-${currentMeasure}-${currentBeat}-${currentSubdivision}`;
+    return `#${getTileKey(
+      note,
+      currentMeasure,
+      currentBeat,
+      currentSubdivision
+    )}`;
   });
   anime({
     ...startStopAnimation,
@@ -302,12 +303,17 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
     const tileIds: string[] = [];
 
     let nextPostion = location;
-    let nextTileKey: TileKey = `${note}-${currentMeasure}-${currentBeat}-${currentSubdivision}`;
+    let nextTileKey: TileKey = getTileKey(
+      note,
+      currentMeasure,
+      currentBeat,
+      currentSubdivision
+    );
     let nextSelectedTile = selectedTiles().get(nextTileKey);
     while (nextSelectedTile === TileState.Combined) {
       tileIds.push(`#${nextTileKey}`);
       nextPostion = incrementPlaybackLocation(nextPostion);
-      nextTileKey = `${note}-${nextPostion[0]}-${nextPostion[1]}-${nextPostion[2]}`;
+      nextTileKey = getTileKey(note, ...nextPostion);
       nextSelectedTile = selectedTiles().get(nextTileKey);
     }
 

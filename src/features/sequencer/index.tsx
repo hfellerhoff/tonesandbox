@@ -45,6 +45,8 @@ import {
   setSequencerBeats,
   setSequencerMeasures,
   setSequencerSubdivisions,
+  getTileKey,
+  parseTileKey,
 } from "./state";
 import { decodeUrlToSequencerState, encodeSequencerToUrl } from "./urlUtils";
 import { setGain, setSelectedInstrument } from "@modules/instruments";
@@ -139,7 +141,7 @@ export default function Sequencer() {
         Array.from(selectedTiles().entries())
           .filter(([, state]) => state !== TileState.None)
           .map(([key]) => {
-            const [note] = key.split("-");
+            const { note } = parseTileKey(key);
             return note.substring(0, note.length - 1);
           })
       )
@@ -208,7 +210,7 @@ export default function Sequencer() {
       localStartLocation[1] !== endLocation[1] ||
       localStartLocation[2] !== endLocation[2]
     ) {
-      const tileKey: TileKey = `${startNote}-${localStartLocation[0]}-${localStartLocation[1]}-${localStartLocation[2]}`;
+      const tileKey: TileKey = getTileKey(startNote, ...localStartLocation);
       tentativeTileKeys.push(tileKey);
 
       const nextLocation = incrementPlaybackLocation(localStartLocation);
@@ -217,7 +219,7 @@ export default function Sequencer() {
       localStartLocation[2] = nextLocation[2];
     }
 
-    const finalTileKey: TileKey = `${startNote}-${endLocation[0]}-${endLocation[1]}-${endLocation[2]}`;
+    const finalTileKey: TileKey = getTileKey(endNote, ...endLocation);
     tentativeTileKeys.push(finalTileKey);
 
     return tentativeTileKeys;
@@ -227,7 +229,7 @@ export default function Sequencer() {
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {
       if (isMouseDown()) {
-        const tileKey: TileKey = `${note}-${measure}-${beat}-${subdivision}`;
+        const tileKey: TileKey = getTileKey(note, measure, beat, subdivision);
         const isSelected = !!selectedTiles().get(tileKey);
         const canChange =
           (mouseInteractionIntent() === "select" && !isSelected) ||
@@ -269,7 +271,7 @@ export default function Sequencer() {
   const handleOnMouseDownTile =
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {
-      const tileKey: TileKey = `${note}-${measure}-${beat}-${subdivision}`;
+      const tileKey: TileKey = getTileKey(note, measure, beat, subdivision);
       const isSelected = !!selectedTiles().get(tileKey);
       if (isSelected) {
         setMouseInteractionIntent("deselect");
@@ -294,7 +296,7 @@ export default function Sequencer() {
   const handleOnClickTile =
     (note: string, measure: number, beat: number, subdivision: number) =>
     () => {
-      const tileKey: TileKey = `${note}-${measure}-${beat}-${subdivision}`;
+      const tileKey: TileKey = getTileKey(note, measure, beat, subdivision);
       const isSelected =
         selectedTiles().has(tileKey) &&
         selectedTiles().get(tileKey) !== TileState.None;
@@ -348,7 +350,12 @@ export default function Sequencer() {
                           <div class="flex flex-row">
                             <For each={subdivisionArray()}>
                               {(subdivision) => {
-                                const tileKey: TileKey = `${note.note}-${measure}-${beat}-${subdivision}`;
+                                const tileKey: TileKey = getTileKey(
+                                  note.note,
+                                  measure,
+                                  beat,
+                                  subdivision
+                                );
 
                                 const previousTileLocation =
                                   decrementPlaybackLocation([
@@ -356,7 +363,10 @@ export default function Sequencer() {
                                     beat,
                                     subdivision,
                                   ]);
-                                const previousTileKey: TileKey = `${note.note}-${previousTileLocation[0]}-${previousTileLocation[1]}-${previousTileLocation[2]}`;
+                                const previousTileKey: TileKey = getTileKey(
+                                  note.note,
+                                  ...previousTileLocation
+                                );
 
                                 const nextTileLocation =
                                   incrementPlaybackLocation([
@@ -364,7 +374,10 @@ export default function Sequencer() {
                                     beat,
                                     subdivision,
                                   ]);
-                                const nextTileKey: TileKey = `${note.note}-${nextTileLocation[0]}-${nextTileLocation[1]}-${nextTileLocation[2]}`;
+                                const nextTileKey: TileKey = getTileKey(
+                                  note.note,
+                                  ...nextTileLocation
+                                );
 
                                 const isCurrentLocation = createMemo(() => {
                                   const [

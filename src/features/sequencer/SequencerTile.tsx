@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { createEffect, createMemo, onMount } from "solid-js";
-import { TileState, type TileKey } from "./state";
+import { TileState, type TileKey, getTileKey } from "./state";
 
 type MouseEventInteractionHandler = (
   note: string,
@@ -38,7 +38,12 @@ export default function SequencerTile(props: SequencerTileProps) {
   const isStateSingle = createMemo(() => tileState() === TileState.Single);
   const isStateCombined = createMemo(() => tileState() === TileState.Combined);
 
-  const tileKey: TileKey = `${props.note.note}-${props.measure}-${props.beat}-${props.subdivision}`;
+  const tileKey: TileKey = getTileKey(
+    props.note.note,
+    props.measure,
+    props.beat,
+    props.subdivision
+  );
 
   const connectToNextNote = createMemo(() => {
     return isStateCombined() && props.nextTileState === TileState.Combined;

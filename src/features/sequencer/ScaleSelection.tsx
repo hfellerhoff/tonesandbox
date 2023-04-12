@@ -3,7 +3,7 @@ import FloatingModuleWrapper from "@modules/FloatingModuleWrapper";
 import { useStore } from "@nanostores/solid";
 import { atom } from "nanostores";
 import { BsBarChartFill } from "solid-icons/bs";
-import { For, Show, createMemo, createSignal } from "solid-js";
+import { For, createMemo } from "solid-js";
 
 export const scaleAtom = atom([0, 2, 4, 7, 9]);
 export const rootNoteAtom = atom("C");
@@ -49,7 +49,7 @@ export default function ScaleSelection() {
       >
         Scale
       </label>
-      <Select id="scale-select" value={scaleValue()} onChange={onChangeScale}>
+      <Select id="scale-select" value={scaleValue} onChange={onChangeScale}>
         {/* <!-- Diatonic Modes --> */}
         <option value="0,2,4,5,7,9,11">Ionian (Major)</option>
         <option value="0,2,3,5,7,9,10">Dorian</option>
@@ -102,7 +102,7 @@ export default function ScaleSelection() {
         </label>
         <Select
           id="root-note-select"
-          value={rootNote()}
+          value={rootNote}
           onChange={(event) =>
             rootNoteAtom.set((event.target as HTMLSelectElement).value)
           }

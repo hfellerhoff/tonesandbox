@@ -56,7 +56,7 @@ export function InstrumentManagerContent(props: InstrumentAudioModule) {
         Instrument
       </label>
       <Select
-        value={selectedInstrumentSlug()}
+        value={selectedInstrumentSlug}
         onChange={onSelectInstrument}
         disabled={!isToneStarted()}
       >

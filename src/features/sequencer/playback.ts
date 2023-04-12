@@ -32,7 +32,7 @@ const startStopAnimation: anime.AnimeParams = {
 export const [velocity, setVelocity] = createSignal(0.5);
 
 export const [bpm, setBpm] = createSignal(120);
-export const [playbackLoop, setPlaybackLoop] = createSignal<NodeJS.Timer>();
+export const [isPlaying, setIsPlaying] = createSignal(false);
 
 export type PlaybackLocation = [number, number, number];
 export const [playbackLocation, setPlaybackLocation] =
@@ -101,16 +101,15 @@ export const isLocationAfter = (
 ) => compareLocations(location1, location2) === 1;
 
 export const stopPlaybackLoop = () => {
-  Tone.Transport.stop();
-  clearInterval(playbackLoop());
-  setPlaybackLoop(undefined);
   const instrument = selectedInstrumentAtom.get();
+
+  Tone.Transport.cancel();
   if (instrument) {
     instrument.releaseAll(Tone.now());
   }
 
   const delay = Tone.Time(`0:0:${SUBDIVISION_OFFSET}`).toSeconds();
-  setTimeout(() => {
+  Tone.Transport.scheduleOnce(() => {
     selectedTiles().forEach((_, key) => {
       anime({
         targets: `#${key}`,
@@ -118,6 +117,8 @@ export const stopPlaybackLoop = () => {
       });
     });
   }, delay * 1000);
+
+  Tone.Transport.stop();
 };
 
 export const incrementPlaybackLocation = ([
@@ -183,7 +184,7 @@ export const decrementPlaybackLocation = ([
   return [nextMeasure, nextBeat, nextSubdivision] as PlaybackLocation;
 };
 
-export const playSelectedNotes = (location: PlaybackLocation) => {
+export const playSelectedNotes = (location: PlaybackLocation, time: number) => {
   const instrument = selectedInstrumentAtom.get();
   if (!instrument) return;
 
@@ -250,7 +251,7 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
     .map(({ note }) => note);
 
   const delay = Tone.Time(`0:0:${SUBDIVISION_OFFSET}`).toSeconds();
-  const toneTime = Tone.now() + delay;
+  const toneTime = time + delay;
 
   instrument.triggerRelease(endedSelectedCombinedNotes, toneTime);
   endedSelectedCombinedNotes.forEach((note) => {
@@ -334,38 +335,36 @@ export const playSelectedNotes = (location: PlaybackLocation) => {
   });
 };
 
-export const createPlaybackLoop = () => {
+export const startPlaybackLoop = () => {
   Tone.Transport.bpm.value = bpm();
   Tone.Transport.start();
 
-  playSelectedNotes(playbackLocation());
-
   const intervalFrequency =
-    (60 / sequencerSubdivisions() / bpm()) * (4 / sequencerBeats()) * 1000;
+    (60 / sequencerSubdivisions() / bpm()) * (4 / sequencerBeats());
 
-  setPlaybackLoop(
-    setInterval(() => {
-      const nextLocation = incrementPlaybackLocation(playbackLocation());
-      setPlaybackLocation(nextLocation);
-      playSelectedNotes(nextLocation);
-    }, intervalFrequency)
-  );
+  let location = playbackLocation();
+  Tone.Transport.scheduleRepeat((time) => {
+    playSelectedNotes(location, time);
+    location = incrementPlaybackLocation(playbackLocation());
+    setPlaybackLocation(location);
+  }, intervalFrequency);
 };
 
 export const refreshPlaybackLoop = () => {
-  if (playbackLoop()) {
+  if (isPlaying()) {
     stopPlaybackLoop();
-    createPlaybackLoop();
+    startPlaybackLoop();
   }
 };
 
 export const onTogglePlayback = () => {
-  if (playbackLoop()) {
+  if (isPlaying()) {
     stopPlaybackLoop();
     setLocationToStopped();
-
+    setIsPlaying(false);
     return;
   }
   setLocationToBeginning();
-  createPlaybackLoop();
+  startPlaybackLoop();
+  setIsPlaying(true);
 };

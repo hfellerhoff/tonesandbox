@@ -23,7 +23,7 @@ import {
   isLocationBefore,
   onTogglePlayback,
   playbackLocation,
-  playbackLoop,
+  isPlaying,
   setBpm,
   subtractFromPlaybackLocation,
 } from "./playback";
@@ -469,7 +469,7 @@ export default function Sequencer() {
             onClick={onTogglePlayback}
             class="grid place-items-center h-12 w-12 shadow-md rounded-full bg-white dark:bg-gray-800 dark:text-white active:translate-y-0.5 active:shadow border-2 border-transparent transition-colors"
           >
-            {playbackLoop() ? <IoPause /> : <IoPlay />}
+            {isPlaying() ? <IoPause /> : <IoPlay />}
           </button>
           <button
             onClick={() => setSelectedTiles(new Map())}

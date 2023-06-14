@@ -64,6 +64,9 @@ dependencies:
   tone:
     specifier: ^14.7.77
     version: 14.7.77
+  vexflow:
+    specifier: ^4.1.0
+    version: 4.1.0
 
 devDependencies:
   '@types/animejs':
@@ -5290,6 +5293,10 @@ packages:
 
   /validate-html-nesting@1.2.1:
     resolution: {integrity: sha512-T1ab131NkP3BfXB7KUSgV7Rhu81R2id+L6NaJ7NypAAG5iV6gXnPpQE5RK1fvb+3JYsPTL+ihWna5sr5RN9gaQ==}
+    dev: false
+
+  /vexflow@4.1.0:
+    resolution: {integrity: sha512-y28wLS10nftuTERM9vQIzyW7vBZ1tNeF5mRNjRm+8wXsBp5J7oC2C+S7boNoyIJIjxd6qVV0aCw8pgKrfmlwhQ==}
     dev: false
 
   /vfile-location@4.1.0:

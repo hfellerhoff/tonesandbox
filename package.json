@@ -31,7 +31,8 @@
     "svelte": "^3.58.0",
     "tailwindcss": "^3.3.1",
     "theory.js": "^1.2.1",
-    "tone": "^14.7.77"
+    "tone": "^14.7.77",
+    "vexflow": "^4.1.0"
   },
   "devDependencies": {
     "@types/animejs": "^3.1.7",

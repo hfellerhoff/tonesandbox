@@ -24,7 +24,6 @@
     "astro-seo": "^0.7.2",
     "class-variance-authority": "^0.5.2",
     "clsx": "^1.2.1",
-    "handtrackjs": "^0.1.5",
     "nanostores": "^0.7.4",
     "preact": "^10.13.2",
     "solid-icons": "^1.0.4",

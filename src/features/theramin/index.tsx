@@ -18,7 +18,7 @@ type ActiveNote = {
     pitch: number,
     volume: number,
     gain: Tone.Gain
-    oscillator: Tone.PWMOscillator
+    oscillator: Tone.Oscillator
     signal: Tone.Signal<"frequency">
 }
 
@@ -65,7 +65,7 @@ function getVolumeFromPrediction(prediction: Prediction) {
 
 const createActiveNote = (pitch: number, volume: number): ActiveNote => {
     const gain = new Tone.Gain(0).toDestination()
-    const osc = new Tone.PWMOscillator().connect(gain).start();
+    const osc = new Tone.Oscillator().connect(gain).start();
     // a scheduleable signal which can be connected to control an AudioParam or another Signal
     const signal = new Tone.Signal({
         units: "frequency"
@@ -82,11 +82,20 @@ const createActiveNote = (pitch: number, volume: number): ActiveNote => {
 
 export default function TheraminApp() {
     const [activeNotes, setActiveNotes] = createSignal<ActiveNote[]>([])
+    const [videoWidth, setVideoWidth] = createSignal(window.innerWidth)
+    const [videoHeight, setVideoHeight] = createSignal(window.innerHeight)
 
-    onMount(async () => {
+    const start = async () => {
         const videoElement = document.querySelector('video');
+
         // @ts-ignore
-        const model = await window.handTrack.load(defaultParams)
+        if (!window.handTrack?.load) {
+            setTimeout(start, 100);
+            return;
+        }
+
+        // @ts-ignore
+        const model = await window.handTrack?.load(defaultParams)
         // @ts-ignore
         window.handTrack.startVideo(videoElement)
 
@@ -98,13 +107,6 @@ export default function TheraminApp() {
         // face
         // pointtip
         // pinchtip
-
-        const gain = new Tone.Gain(0).toDestination()
-        const osc = new Tone.Oscillator().connect(gain).start();
-        // a scheduleable signal which can be connected to control an AudioParam or another Signal
-        const signal = new Tone.Signal({
-            units: "frequency"
-        }).connect(osc.frequency);
 
         Tone.Transport.scheduleRepeat(async () => {
             const rawPredictions = await model.detect(videoElement) as {
@@ -221,11 +223,20 @@ export default function TheraminApp() {
             console.log(activeNotes().map(activeNote => `${activeNote.pitch.toFixed(2)}Hz, ${activeNote.volume.toFixed(2)}`).join('\n'))
 
             setActiveNotes(activeNotes() || [])
-        }, 0.1)    
-        Tone.Transport.start()    
+        }, 0.05)    
+        Tone.Transport.start() 
+    }
+
+    onMount(async () => {
+           start()
+
+           window.addEventListener('resize', () => {
+                setVideoWidth(window.innerWidth)
+                setVideoHeight(window.innerHeight)
+           })
     })
 
     return (
-        <video width={window.innerWidth} height={window.innerHeight} class="bg-gray-900 object-cover scale-x-[-1]"  />
+        <video width={videoWidth()} height={videoHeight()} class="bg-gray-900 object-cover scale-x-[-1]"  />
     )
 }

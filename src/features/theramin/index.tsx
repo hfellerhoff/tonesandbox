@@ -220,7 +220,7 @@ export default function TheraminApp() {
                 }
             })
 
-            console.log(activeNotes().map(activeNote => `${activeNote.pitch.toFixed(2)}Hz, ${activeNote.volume.toFixed(2)}`).join('\n'))
+            // console.log(activeNotes().map(activeNote => `${activeNote.pitch.toFixed(2)}Hz, ${activeNote.volume.toFixed(2)}`).join('\n'))
 
             setActiveNotes(activeNotes() || [])
         }, 0.05)    

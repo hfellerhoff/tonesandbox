@@ -90,6 +90,19 @@ function clamp(num: number, min: number, max: number) {
   return num <= min ? min : num >= max ? max : num;
 }
 
+/**
+ * Given a value between 0 and 1, interpolate it to a new range
+ */
+function interpolate({
+  input = 0,
+  outputMin = 0,
+  outputMax = 1,
+  inputMin = 0,
+  inputMax = 1,
+}) {
+  return ((input - inputMin) * (outputMax - outputMin)) / (inputMax - inputMin);
+}
+
 const OSCILLATORS = [
   {
     createOscillator: () => new Tone.Oscillator(),
@@ -119,13 +132,59 @@ type Landmark = {
   z: number;
 };
 
-const createAudioElements = (template: string) => {
+const CONFIG = {
+  VIBRATO_FREQUENCY: {
+    MIN: 10,
+    MAX: 25,
+  },
+  VIBRATO_DEPTH: {
+    MIN: 0.45,
+    MAX: 0.8,
+  },
+};
+
+type VibratoConfig = {
+  frequency: number;
+  depth: number;
+};
+function getVibratoConfig(input: number): VibratoConfig {
+  const { VIBRATO_FREQUENCY, VIBRATO_DEPTH } = CONFIG;
+
+  const frequency = interpolate({
+    input,
+    outputMin: VIBRATO_FREQUENCY.MIN,
+    outputMax: VIBRATO_FREQUENCY.MAX,
+  });
+
+  const depth = interpolate({
+    input,
+    outputMin: VIBRATO_DEPTH.MIN,
+    outputMax: VIBRATO_DEPTH.MAX,
+  });
+
+  return {
+    frequency,
+    depth,
+  };
+}
+
+const createAudioElements = ({
+  oscillatorName,
+  vibratoConfig,
+}: {
+  oscillatorName: string;
+  vibratoConfig: VibratoConfig;
+}) => {
   const oscillator = OSCILLATORS.find(
-    (osc) => osc.label === template
+    (osc) => osc.label === oscillatorName
   )!.createOscillator();
 
   const gain = new Tone.Gain(0).toDestination();
-  const tremolo = new Tone.Tremolo(9, 0).connect(gain).start();
+  const vibrato = new Tone.Vibrato(
+    vibratoConfig.frequency,
+    vibratoConfig.depth
+  ).connect(gain);
+  const tremolo = new Tone.Tremolo(9, 0).connect(vibrato).start();
   const crusher = new Tone.BitCrusher(16).connect(tremolo);
   const osc = oscillator.connect(crusher).start();
   const signal = new Tone.Signal({
@@ -134,6 +193,7 @@ const createAudioElements = (template: string) => {
 
   return {
     gain,
+    vibrato,
     tremolo,
     crusher,
     osc,
@@ -145,21 +205,31 @@ export default function ThereminApp() {
   const hands = new Array(2).fill(0).map((_, i) => i);
   const fingers = new Array(22).fill(0).map((_, i) => i);
 
+  const [vibratoValue, setVibratoValue] = createSignal(0.5);
   const [audioElements, setAudioElements] = createSignal(
-    createAudioElements("Oscillator")
+    createAudioElements({
+      oscillatorName: "Oscillator",
+      vibratoConfig: getVibratoConfig(vibratoValue()),
+    })
   );
 
   const onChangeOscillator = (event: Event) => {
     const template = (event.target as HTMLSelectElement).value;
 
-    const { gain, tremolo, crusher, osc, signal } = audioElements();
+    const { gain, vibrato, tremolo, crusher, osc, signal } = audioElements();
     signal.dispose();
     osc.dispose();
     crusher.dispose();
     tremolo.dispose();
+    vibrato.dispose();
     gain.dispose();
 
-    setAudioElements(createAudioElements(template));
+    setAudioElements(
+      createAudioElements({
+        oscillatorName: template,
+        vibratoConfig: getVibratoConfig(vibratoValue()),
+      })
+    );
   };
 
   onMount(async () => {
@@ -329,6 +399,30 @@ export default function ThereminApp() {
             )}
           </For>
         </Select>
+        <label
+          for="vibrato-slider"
+          class="mt-2 block text-sm font-medium text-gray-500 dark:text-gray-400"
+        >
+          Vibrato
+        </label>
+        <input
+          id="vibrato-slider"
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={vibratoValue()}
+          onChange={(e) => {
+            const newValue = parseFloat(e.target.value);
+            setVibratoValue(newValue);
+
+            const { frequency, depth } = getVibratoConfig(newValue);
+            const { vibrato } = audioElements();
+
+            vibrato.frequency.rampTo(frequency, 0.1, Tone.now());
+            vibrato.depth.rampTo(depth, 0.1, Tone.now());
+          }}
+        />
       </FloatingModuleWrapper>
       <FloatingModuleWrapper
         icon={<FaRegularHand class="scale-x-[-1]" />}

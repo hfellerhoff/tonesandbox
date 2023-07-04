@@ -141,7 +141,7 @@ const createAudioElements = (template: string) => {
   };
 };
 
-export default function TheraminApp() {
+export default function ThereminApp() {
   const hands = new Array(2).fill(0).map((_, i) => i);
   const fingers = new Array(22).fill(0).map((_, i) => i);
 
@@ -320,7 +320,7 @@ export default function TheraminApp() {
           for="scale-select"
           class="block text-sm font-medium text-gray-500 dark:text-gray-400"
         >
-          Scale
+          Sound
         </label>
         <Select id="scale-select" onChange={onChangeOscillator}>
           <For each={OSCILLATORS}>

@@ -204,6 +204,7 @@ const createAudioElements = ({
 export default function ThereminApp() {
   const hands = new Array(2).fill(0).map((_, i) => i);
   const fingers = new Array(22).fill(0).map((_, i) => i);
+  const [hasHandsShowing, setHasHandsShowing] = createSignal(false);
 
   const [vibratoValue, setVibratoValue] = createSignal(0.5);
   const [audioElements, setAudioElements] = createSignal(
@@ -321,7 +322,13 @@ export default function ThereminApp() {
 
         const toneAudioElements = audioElements();
 
+        const updatedHasHandsShowing = data.hands.landmarksVisible?.some(
+          (visible) => visible
+        );
+        setHasHandsShowing(updatedHasHandsShowing);
+
         data.hands.landmarksVisible?.forEach((visible, i) => {
+          const handContainer = document.getElementById(`hand-${i}`);
           if (visible) {
             data.hands.landmarks[i]?.forEach((landmark, j) => {
               boxes[`${i}-${j}`]?.setAttribute(
@@ -355,9 +362,16 @@ export default function ThereminApp() {
                 );
               }
             });
+
+            if (handContainer && handContainer.style.display !== "block") {
+              handContainer.setAttribute("style", "display: block");
+            }
           } else {
             if (i === 1) {
               toneAudioElements.gain.gain.rampTo(0, 0.1, Tone.now());
+            }
+            if (handContainer && handContainer.style.display !== "none") {
+              handContainer.setAttribute("style", "display: none");
             }
           }
         });
@@ -369,22 +383,41 @@ export default function ThereminApp() {
     <>
       <For each={hands}>
         {(hand) => (
-          <For each={fingers}>
-            {(finger) => (
-              <div
-                id={`${hand}-${finger}`}
-                class={clsx(
-                  "absolute rounded-full h-4 w-4 text-white grid place-items-center",
-                  {
-                    "bg-red-500 dark:bg-red-400": hand === 0,
-                    "bg-blue-500 dark:bg-blue-400": hand === 1,
-                  }
-                )}
-              />
-            )}
-          </For>
+          <div id={`hand-${hand}`}>
+            <For each={fingers}>
+              {(finger) => (
+                <div
+                  id={`${hand}-${finger}`}
+                  class={clsx(
+                    "absolute rounded-full h-4 w-4 text-white grid place-items-center",
+                    {
+                      "bg-red-500 dark:bg-red-400": hand === 0,
+                      "bg-blue-500 dark:bg-blue-400": hand === 1,
+                    }
+                  )}
+                />
+              )}
+            </For>
+          </div>
         )}
       </For>
+      <div
+        class={clsx(
+          "text-gray-400 dark:text-gray-700 text-center flex flex-col gap-2 items-center transition-opacity",
+          {
+            "opacity-0": hasHandsShowing(),
+            "opacity-100": !hasHandsShowing(),
+          }
+        )}
+      >
+        <div class="flex gap-2 items-center">
+          <FaRegularHand class="scale-x-[-1] w-12 h-12" />
+          <FaRegularHand class="w-12 h-12" />
+        </div>
+        <div class="max-w-[230px]">
+          Put your hands in front of your camera to start making music!
+        </div>
+      </div>
       <FloatingModuleWrapper icon={<FaSolidWaveSquare />} position="top-right">
         <label
           for="scale-select"

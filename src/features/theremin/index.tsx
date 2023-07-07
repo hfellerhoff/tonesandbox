@@ -415,7 +415,8 @@ export default function ThereminApp() {
           <FaRegularHand class="w-12 h-12" />
         </div>
         <div class="max-w-[230px]">
-          Put your hands in front of your camera to start making music!
+          Pinch your fingers together in front of your camera to start making
+          music!
         </div>
       </div>
       <FloatingModuleWrapper icon={<FaSolidWaveSquare />} position="top-right">

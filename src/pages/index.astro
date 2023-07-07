@@ -7,14 +7,28 @@ import { Icon } from "astro-icon";
 <Layout
   description="An open-source collection of different musical tools and experiments, serving as a place it try out new ideas and share useful and interesting ideas."
 >
-  <a
-    class="h-11 w-11 absolute top-4 right-4 z-10 bg-white dark:bg-gray-800 dark:text-white rounded shadow px-3 py-2 flex items-center justify-center gap-2 border-transparent hover:border-purple-600 border-2 transition-all"
-    href="https://github.com/hfellerhoff/tonesandbox"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <Icon pack="lucide" name="github" class="" />
-  </a>
+  <div class="absolute top-4 right-4 z-10 flex items-center gap-2">
+    <a
+      class="h-11 w-11 bg-white dark:bg-gray-800 dark:text-white rounded shadow px-3 py-2 flex items-center justify-center gap-2 border-transparent hover:border-purple-600 border-2 transition-all"
+      href="https://github.com/hfellerhoff/tonesandbox"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Icon pack="lucide" name="github" class="" />
+    </a>
+    <a
+      class="h-11 w-11 bg-white dark:bg-gray-800 dark:text-white rounded shadow flex items-center justify-center gap-2 border-transparent hover:border-purple-600 border-2 transition-all"
+      href="https://www.henryfellerhoff.com"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="coat.jpeg"
+        alt="Henry Fellerhoff"
+        class="rounded-full w-6 h-6"
+      />
+    </a>
+  </div>
   <main class="pt-20 p-4 overflow-y-auto h-screen">
     <ul class="grid gap-4 grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))]">
       <NavigationCard

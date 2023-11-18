@@ -3,7 +3,7 @@ import { Note } from "theory.js";
 import { selectedInstrumentAtom } from "@modules/instruments";
 import { createSignal } from "solid-js";
 import {
-  TileKey,
+  type TileKey,
   TileState,
   getTileKey,
   parseTileKey,

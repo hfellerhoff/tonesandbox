@@ -16,7 +16,7 @@ import ScaleSelection, {
 import type { SequencerNote } from "./SequencerTile";
 import SequencerTile from "./SequencerTile";
 import {
-  PlaybackLocation,
+  type PlaybackLocation,
   SUBDIVISION_OFFSET,
   decrementPlaybackLocation,
   incrementPlaybackLocation,

@@ -8,11 +8,11 @@ import {
   FaRegularHandLizard,
   FaSolidArrowsLeftRight,
   FaSolidArrowsUpDown,
-  FaSolidMapPin,
   FaSolidWaveSquare,
 } from "solid-icons/fa";
 import FloatingModuleWrapper from "@modules/FloatingModuleWrapper";
 import Select from "@components/Select";
+import { CgSpinner } from "solid-icons/cg";
 
 enum FINGERS {
   WRIST,
@@ -205,6 +205,7 @@ export default function ThereminApp() {
   const hands = new Array(2).fill(0).map((_, i) => i);
   const fingers = new Array(22).fill(0).map((_, i) => i);
   const [hasHandsShowing, setHasHandsShowing] = createSignal(false);
+  const [hasLoadedModel, setHasLoadedModel] = createSignal(false);
 
   const [vibratoValue, setVibratoValue] = createSignal(0.5);
   const [audioElements, setAudioElements] = createSignal(
@@ -235,6 +236,9 @@ export default function ThereminApp() {
 
   onMount(async () => {
     const handsfree = new Handsfree({ hands: true });
+    handsfree.on("handsModelReady", () => {
+      setHasLoadedModel(true);
+    });
     handsfree.start();
 
     const box = document.getElementById("box");
@@ -407,6 +411,7 @@ export default function ThereminApp() {
           {
             "opacity-0": hasHandsShowing(),
             "opacity-100": !hasHandsShowing(),
+            hidden: !hasLoadedModel(),
           }
         )}
       >
@@ -417,6 +422,21 @@ export default function ThereminApp() {
         <div class="max-w-[230px]">
           Pinch your fingers together in front of your camera to start making
           music!
+        </div>
+      </div>
+      <div
+        class={clsx(
+          "text-gray-400 dark:text-gray-700 text-center flex flex-col gap-2 items-center transition-opacity",
+          {
+            hidden: hasLoadedModel(),
+          }
+        )}
+      >
+        <div class="flex gap-2 items-center">
+          <CgSpinner size={32} class="animate-spin" />
+        </div>
+        <div class="max-w-[230px]">
+          Loading the theremin... this may take a few seconds.
         </div>
       </div>
       <FloatingModuleWrapper icon={<FaSolidWaveSquare />} position="top-right">

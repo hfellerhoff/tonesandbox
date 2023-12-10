@@ -1,10 +1,10 @@
 ---
-import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
-import LoadingOverlay from "@components/LoadingOverlay";
-import InstrumentModule from "@modules/instruments/InstrumentModule";
-import MIDIDeviceModule from "@modules/midi";
-import Piano from "../features/piano";
-import Layout from "../layouts/Layout.astro";
+import AudioFeatureWrapper from "@solid/components/AudioFeatureWrapper";
+import LoadingOverlay from "@solid/components/LoadingOverlay";
+import InstrumentModule from "@solid/modules/instruments/InstrumentModule";
+import MIDIDeviceModule from "@solid/modules/midi";
+import Layout from "@layouts/Layout.astro";
+import PianoPage from "@preact/apps/piano";
 ---
 
 <Layout
@@ -28,7 +28,7 @@ import Layout from "../layouts/Layout.astro";
         ]}
         position={"bottom-right"}
       />
-      <Piano client:load />
+      <PianoPage client:load />
     </AudioFeatureWrapper>
   </main>
 </Layout>

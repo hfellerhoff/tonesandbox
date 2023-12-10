@@ -1,24 +1,24 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import ThereminApp from "@features/theremin";
-import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
+import AudioFeatureWrapper from "@solid/components/AudioFeatureWrapper";
+import ThereminApp from "@solid/apps/theremin";
 ---
 
 <Layout
-    title="Theremin"
-    description="A theremin emulator controlled using your computer webcam and hand movements. Pinch your fingers together and make some music!"
+  title="Theremin"
+  description="A theremin emulator controlled using your computer webcam and hand movements. Pinch your fingers together and make some music!"
 >
-    <main
-        class="flex flex-col items-center justify-center h-screen w-full overflow-hidden"
-    >
-        <AudioFeatureWrapper client:load>
-            <ThereminApp client:only="solid-js" />
-        </AudioFeatureWrapper>
-    </main>
+  <main
+    class="flex flex-col items-center justify-center h-screen w-full overflow-hidden"
+  >
+    <AudioFeatureWrapper client:load>
+      <ThereminApp client:only="solid-js" />
+    </AudioFeatureWrapper>
+  </main>
 </Layout>
 
 <style>
-    :global(.handsfree-debugger) {
-        display: none;
-    }
+  :global(.handsfree-debugger) {
+    display: none;
+  }
 </style>

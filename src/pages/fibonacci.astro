@@ -1,18 +1,18 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import FibonacciPage from "@features/fibonacci";
-import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
+import FibonacciPage from "@solid/apps/fibonacci";
+import AudioFeatureWrapper from "@solid/components/AudioFeatureWrapper";
 ---
 
 <Layout
-    title="Fibonacci Melody Generator"
-    description="A melody generator based on the Fibonacci sequence. Tweak the modular division denominator and base octave to create different melodies. "
+  title="Fibonacci Melody Generator"
+  description="A melody generator based on the Fibonacci sequence. Tweak the modular division denominator and base octave to create different melodies. "
 >
-    <main
-        class="flex flex-col items-center justify-center h-screen w-full overflow-hidden"
-    >
-        <AudioFeatureWrapper client:load>
-            <FibonacciPage client:load />
-        </AudioFeatureWrapper>
-    </main>
+  <main
+    class="flex flex-col items-center justify-center h-screen w-full overflow-hidden"
+  >
+    <AudioFeatureWrapper client:load>
+      <FibonacciPage client:load />
+    </AudioFeatureWrapper>
+  </main>
 </Layout>

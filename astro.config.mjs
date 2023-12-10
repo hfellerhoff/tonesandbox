@@ -1,10 +1,9 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
-import solidJs from "@astrojs/solid-js";
 import preact from "@astrojs/preact";
+import solidJs from "@astrojs/solid-js";
 import svelte from "@astrojs/svelte";
 import AstroPWA from "@vite-pwa/astro";
-
 import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
@@ -13,8 +12,12 @@ export default defineConfig({
   integrations: [
     AstroPWA(),
     tailwind(),
-    solidJs(),
-    preact(),
+    solidJs({
+      include: ["**/solid/**/*", "**/node_modules/solid-icons/**/*"],
+    }),
+    preact({
+      include: ["**/preact/**/*"],
+    }),
     svelte(),
     sitemap(),
   ],

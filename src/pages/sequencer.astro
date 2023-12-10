@@ -1,9 +1,9 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Sequencer from "../features/sequencer";
-import LoadingOverlay from "@components/LoadingOverlay";
-import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
-import InstrumentModule from "@modules/instruments/InstrumentModule";
+import Layout from "@layouts/Layout.astro";
+import LoadingOverlay from "@solid/components/LoadingOverlay";
+import AudioFeatureWrapper from "@solid/components/AudioFeatureWrapper";
+import InstrumentModule from "@solid/modules/instruments/InstrumentModule";
+import SequencerPage from "@solid/apps/sequencer";
 ---
 
 <Layout
@@ -25,7 +25,7 @@ import InstrumentModule from "@modules/instruments/InstrumentModule";
         ]}
         position={"bottom-left"}
       />
-      <Sequencer client:load />
+      <SequencerPage client:load />
     </AudioFeatureWrapper>
   </main>
 </Layout>

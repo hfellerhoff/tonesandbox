@@ -1,5 +1,5 @@
 import * as Tone from "tone";
-import { For, createMemo, createSignal, onMount } from "solid-js";
+import { For, Show, createMemo, createSignal, onMount } from "solid-js";
 // @ts-ignore
 import Handsfree from "handsfree";
 import clsx from "clsx";
@@ -385,6 +385,44 @@ export default function ThereminApp() {
 
   return (
     <>
+      <Show
+        when={hasLoadedModel()}
+        fallback={
+          <div
+            class={clsx(
+              "text-gray-400 dark:text-gray-700 text-center flex flex-col gap-2 items-center transition-opacity select-none"
+            )}
+          >
+            <div class="flex gap-2 items-center">
+              <CgSpinner size={32} class="animate-spin" />
+            </div>
+            <div class="max-w-[230px]">
+              Loading the theremin... this may take a few seconds.
+            </div>
+          </div>
+        }
+        keyed
+      >
+        <div
+          class={clsx(
+            "text-gray-400 dark:text-gray-700 text-center flex flex-col gap-2 items-center transition-opacity select-none",
+            {
+              "opacity-0": hasHandsShowing(),
+              "opacity-100": !hasHandsShowing(),
+              hidden: !hasLoadedModel(),
+            }
+          )}
+        >
+          <div class="flex gap-2 items-center">
+            <FaRegularHand class="scale-x-[-1] w-12 h-12" />
+            <FaRegularHand class="w-12 h-12" />
+          </div>
+          <div class="max-w-[230px]">
+            Pinch your fingers together in front of your camera to start making
+            music!
+          </div>
+        </div>
+      </Show>
       <For each={hands}>
         {(hand) => (
           <div id={`hand-${hand}`}>
@@ -397,6 +435,7 @@ export default function ThereminApp() {
                     {
                       "bg-red-500 dark:bg-red-400": hand === 0,
                       "bg-blue-500 dark:bg-blue-400": hand === 1,
+                      hidden: !hasHandsShowing() || !hasLoadedModel(),
                     }
                   )}
                 />
@@ -405,40 +444,6 @@ export default function ThereminApp() {
           </div>
         )}
       </For>
-      <div
-        class={clsx(
-          "text-gray-400 dark:text-gray-700 text-center flex flex-col gap-2 items-center transition-opacity",
-          {
-            "opacity-0": hasHandsShowing(),
-            "opacity-100": !hasHandsShowing(),
-            hidden: !hasLoadedModel(),
-          }
-        )}
-      >
-        <div class="flex gap-2 items-center">
-          <FaRegularHand class="scale-x-[-1] w-12 h-12" />
-          <FaRegularHand class="w-12 h-12" />
-        </div>
-        <div class="max-w-[230px]">
-          Pinch your fingers together in front of your camera to start making
-          music!
-        </div>
-      </div>
-      <div
-        class={clsx(
-          "text-gray-400 dark:text-gray-700 text-center flex flex-col gap-2 items-center transition-opacity",
-          {
-            hidden: hasLoadedModel(),
-          }
-        )}
-      >
-        <div class="flex gap-2 items-center">
-          <CgSpinner size={32} class="animate-spin" />
-        </div>
-        <div class="max-w-[230px]">
-          Loading the theremin... this may take a few seconds.
-        </div>
-      </div>
       <FloatingModuleWrapper icon={<FaSolidWaveSquare />} position="top-right">
         <label
           for="scale-select"

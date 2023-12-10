@@ -1,0 +1,18 @@
+---
+import Layout from "@layouts/Layout.astro";
+import CanvasPage from "@features/canvas";
+import AudioFeatureWrapper from "@components/AudioFeatureWrapper";
+---
+
+<Layout
+  title="Canvas"
+  description="A blank slate for making music. Drag in audio and effect blocks to create music."
+>
+  <main
+    class="flex flex-col items-center justify-center h-screen w-full overflow-hidden"
+  >
+    <AudioFeatureWrapper client:load>
+      <CanvasPage client:load />
+    </AudioFeatureWrapper>
+  </main>
+</Layout>

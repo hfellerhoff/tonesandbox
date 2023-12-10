@@ -1,6 +1,6 @@
-import { h, Fragment } from 'preact';
-import type { PianoStyle } from '.';
-import PianoKey from './PianoKey';
+import { h, Fragment } from "preact";
+import type { PianoStyle } from ".";
+import PianoKey from "./PianoKey";
 
 interface Props {
   octave: number;
@@ -11,86 +11,86 @@ interface Props {
 
 const PianoOctave = ({ octave, style, activeNotes, isMouseDown }: Props) => {
   return (
-    <div className='flex relative'>
+    <div className="flex relative">
       <PianoKey
-        note='C'
+        note="C"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='C#'
+        note="C#"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='D'
+        note="D"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='D#'
+        note="D#"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='E'
+        note="E"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='F'
+        note="F"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='F#'
+        note="F#"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='G'
+        note="G"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='G#'
+        note="G#"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='A'
+        note="A"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='A#'
+        note="A#"
         octave={octave}
         style={style}
         activeNotes={activeNotes}
         isMouseDown={isMouseDown}
       />
       <PianoKey
-        note='B'
+        note="B"
         octave={octave}
         style={style}
         activeNotes={activeNotes}

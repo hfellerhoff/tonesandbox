@@ -1,3 +1,4 @@
+import { h, Fragment } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import PianoOctave from "./PianoOctave";
 import useHandlePlayback from "./useHandlePlayback";
@@ -27,7 +28,7 @@ const Piano = ({
   noScroll = false,
 }: Props) => {
   const { activeNotes } = useHandlePlayback();
-  const pianoRef = useRef<HTMLDivElement>(null);
+  const pianoRef = useRef<HTMLDivElement | null>(null);
 
   const [isMouseDown, setIsMouseDown] = useState(false);
 

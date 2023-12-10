@@ -1,7 +1,7 @@
 // https://docs.astro.build/en/guides/typescript/#errors-typing-multiple-jsx-frameworks-at-the-same-time
 /** @jsxImportSource preact */
 
-import { h, Fragment } from "preact";
+import { h } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { Scale, Note } from "theory.js";
 import * as Tone from "tone";

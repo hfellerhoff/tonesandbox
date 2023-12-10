@@ -1,29 +1,15 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "baseUrl": "/Users/henryfellerhoff/Code/tonesandbox-astro",
+    "baseUrl": ".",
     "paths": {
-      "@solid/*": [
-        "src/frameworks/solid/*"
-      ],
-      "@svelte/*": [
-        "src/frameworks/svelte/*"
-      ],
-      "@preact/*": [
-        "src/frameworks/preact/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@layouts/*": [
-        "src/layouts/*"
-      ],
-      "@shared/*": [
-        "src/shared/*"
-      ],
-      "@modules/*": [
-        "src/modules/*"
-      ]
+      "@solid/*": ["src/frameworks/solid/*"],
+      "@svelte/*": ["src/frameworks/svelte/*"],
+      "@preact/*": ["src/frameworks/preact/*"],
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@shared/*": ["src/shared/*"],
+      "@modules/*": ["src/modules/*"]
     },
     "jsx": "preserve",
     "jsxImportSource": "solid-js"

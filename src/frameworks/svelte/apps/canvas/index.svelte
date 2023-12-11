@@ -50,6 +50,6 @@
 {/each}
 
 <button
-  class="fixed bottom-4 left-[50%] translate-y-[-50%]"
+  class="fixed bottom-4 left-[50%] translate-x-[-50%] py-2 px-2 font-medium rounded active:translate-y-0.5 flex items-center justify-center gap-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100"
   on:click={addOscillator}>Add Oscillator</button
 >

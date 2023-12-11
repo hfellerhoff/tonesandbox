@@ -65,7 +65,7 @@
             Wave
           </legend>
           <select
-            class="border-gray-300 border border-solid w-full rounded bg-gray-100 p-2 h-10"
+            class="border-gray-300 dark:border-gray-700 dark:text-gray-100 border border-solid w-full rounded bg-gray-100 dark:bg-gray-800 p-2 h-10"
             bind:value={wave}
           >
             <option value="sine">Sine</option>
@@ -83,7 +83,7 @@
           <input
             type="number"
             bind:value={frequency}
-            class="border-gray-300 border border-solid w-full rounded bg-gray-100 p-2 h-10"
+            class="border-gray-300 dark:border-gray-700 dark:text-gray-100 border border-solid w-full rounded bg-gray-100 dark:bg-gray-800 p-2 h-10"
           />
         </div>
       </div>

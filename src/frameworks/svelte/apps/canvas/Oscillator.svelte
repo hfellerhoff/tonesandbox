@@ -98,3 +98,13 @@
     </div>
   </div>
 </div>
+
+<style>
+  .handle {
+    cursor: grab;
+  }
+
+  .handle:active {
+    cursor: grabbing;
+  }
+</style>
